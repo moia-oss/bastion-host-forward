@@ -1,0 +1,1435 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bastion Host created for normal username/password access 1`] = `
+Object {
+  "Outputs": Object {
+    "MyTestConstructBastionHostBastionHostIdAA5F3A39": Object {
+      "Description": "Instance ID of the bastion host. Use this to connect via SSM Session Manager",
+      "Value": Object {
+        "Ref": "MyTestConstructBastionHost55102049",
+      },
+    },
+  },
+  "Parameters": Object {
+    "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": Object {
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+    },
+  },
+  "Resources": Object {
+    "MyTestConstructBastionHost55102049": Object {
+      "DependsOn": Array [
+        "MyTestConstructBastionHostInstanceRoleDefaultPolicyED54846A",
+        "MyTestConstructBastionHostInstanceRoleB822D80A",
+      ],
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "IamInstanceProfile": Object {
+          "Ref": "MyTestConstructBastionHostInstanceProfileB5100B06",
+        },
+        "ImageId": Object {
+          "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter",
+        },
+        "InstanceType": "t3.nano",
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "MyTestConstructBastionHostInstanceSecurityGroupA456C4B7",
+              "GroupId",
+            ],
+          },
+        ],
+        "SubnetId": Object {
+          "Ref": "TestVpcPrivateSubnet1SubnetCC65D771",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "MyBastion",
+          },
+        ],
+        "UserData": Object {
+          "Fn::Base64": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "#!/bin/bash
+yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+yum install -y haproxy
+echo \\"listen postgres
+  bind 0.0.0.0:",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Port",
+                  ],
+                },
+                "
+  timeout connect 10s
+  timeout client 1m
+  timeout server 1m
+  mode tcp
+  server mypostgres ",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Address",
+                  ],
+                },
+                ":",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Port",
+                  ],
+                },
+                "
+  server yourpostgres ",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Address",
+                  ],
+                },
+                ":",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Port",
+                  ],
+                },
+                "
+\\" > /etc/haproxy/haproxy.cfg
+service haproxy restart",
+              ],
+            ],
+          },
+        },
+      },
+      "Type": "AWS::EC2::Instance",
+    },
+    "MyTestConstructBastionHostInstanceProfileB5100B06": Object {
+      "Properties": Object {
+        "Roles": Array [
+          Object {
+            "Ref": "MyTestConstructBastionHostInstanceRoleB822D80A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "MyTestConstructBastionHostInstanceRoleB822D80A": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "ec2.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "MyBastion",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "MyTestConstructBastionHostInstanceRoleDefaultPolicyED54846A": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ssmmessages:*",
+                "ssm:UpdateInstanceInformation",
+                "ec2messages:*",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "MyTestConstructBastionHostInstanceRoleDefaultPolicyED54846A",
+        "Roles": Array [
+          Object {
+            "Ref": "MyTestConstructBastionHostInstanceRoleB822D80A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "MyTestConstructBastionHostInstanceSecurityGroupA456C4B7": Object {
+      "Properties": Object {
+        "GroupDescription": "TestStack/MyTestConstruct/BastionHost/Resource/InstanceSecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "MyBastion",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "TestRDSDF309CB7": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AllocatedStorage": "100",
+        "CopyTagsToSnapshot": true,
+        "DBInstanceClass": "db.t3.micro",
+        "DBSubnetGroupName": Object {
+          "Ref": "TestRDSSubnetGroup75AFEBE1",
+        },
+        "DeletionProtection": true,
+        "Engine": "postgres",
+        "MasterUserPassword": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{{resolve:secretsmanager:",
+              Object {
+                "Ref": "TestRDSSecret714A3E8B",
+              },
+              ":SecretString:password::}}",
+            ],
+          ],
+        },
+        "MasterUsername": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{{resolve:secretsmanager:",
+              Object {
+                "Ref": "TestRDSSecret714A3E8B",
+              },
+              ":SecretString:username::}}",
+            ],
+          ],
+        },
+        "StorageType": "gp2",
+        "VPCSecurityGroups": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "TestRDSSecurityGroup07AF5D61",
+              "GroupId",
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBInstance",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "TestRDSSecret714A3E8B": Object {
+      "Properties": Object {
+        "GenerateSecretString": Object {
+          "ExcludeCharacters": "\\"@/\\\\",
+          "GenerateStringKey": "password",
+          "PasswordLength": 30,
+          "SecretStringTemplate": "{\\"username\\":\\"testuser\\"}",
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+    },
+    "TestRDSSecretAttachment3D0D1DF6": Object {
+      "Properties": Object {
+        "SecretId": Object {
+          "Ref": "TestRDSSecret714A3E8B",
+        },
+        "TargetId": Object {
+          "Ref": "TestRDSDF309CB7",
+        },
+        "TargetType": "AWS::RDS::DBInstance",
+      },
+      "Type": "AWS::SecretsManager::SecretTargetAttachment",
+    },
+    "TestRDSSecurityGroup07AF5D61": Object {
+      "Properties": Object {
+        "GroupDescription": "Security group for TestRDS database",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "TestRDSSubnetGroup75AFEBE1": Object {
+      "Properties": Object {
+        "DBSubnetGroupDescription": "Subnet group for TestRDS database",
+        "SubnetIds": Array [
+          Object {
+            "Ref": "TestVpcPrivateSubnet1SubnetCC65D771",
+          },
+          Object {
+            "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBSubnetGroup",
+    },
+    "TestVpcE77CE678": Object {
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "TestVpcIGW9DD53F70": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "TestVpcPublicSubnet1NATGatewayA323E3EC",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet1RouteTable469B0105",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPrivateSubnet1RouteTable469B0105": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet1RouteTable469B0105",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPrivateSubnet1SubnetCC65D771",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPrivateSubnet1SubnetCC65D771": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.128.0/18",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet1",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "TestVpcPublicSubnet2NATGatewayA9858C31",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPrivateSubnet2RouteTableCEF29F7C": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet2",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPrivateSubnet2SubnetDE0C64A2": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.192.0/18",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet2",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315": Object {
+      "DependsOn": Array [
+        "TestVpcVPCGWF1827B84",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "TestVpcIGW9DD53F70",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPublicSubnet1EIP4884338C": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "TestVpcPublicSubnet1NATGatewayA323E3EC": Object {
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "TestVpcPublicSubnet1EIP4884338C",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "TestVpcPublicSubnet1RouteTable4CBFF871": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPublicSubnet1SubnetA7DB1EDF": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/18",
+        "MapPublicIpOnLaunch": true,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A": Object {
+      "DependsOn": Array [
+        "TestVpcVPCGWF1827B84",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "TestVpcIGW9DD53F70",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet2RouteTable75B88314",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPublicSubnet2EIP83F7944C": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "TestVpcPublicSubnet2NATGatewayA9858C31": Object {
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "TestVpcPublicSubnet2EIP83F7944C",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet2Subnet80A14523",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "TestVpcPublicSubnet2RouteTable75B88314": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet2RouteTable75B88314",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet2Subnet80A14523",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPublicSubnet2Subnet80A14523": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.64.0/18",
+        "MapPublicIpOnLaunch": true,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcVPCGWF1827B84": Object {
+      "Properties": Object {
+        "InternetGatewayId": Object {
+          "Ref": "TestVpcIGW9DD53F70",
+        },
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+    },
+  },
+}
+`;
+
+exports[`Bastion Host created with extended Role for IAM RDS Connection 1`] = `
+Object {
+  "Outputs": Object {
+    "MyTestConstructBastionHostBastionHostIdAA5F3A39": Object {
+      "Description": "Instance ID of the bastion host. Use this to connect via SSM Session Manager",
+      "Value": Object {
+        "Ref": "MyTestConstructBastionHost55102049",
+      },
+    },
+  },
+  "Parameters": Object {
+    "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": Object {
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+    },
+  },
+  "Resources": Object {
+    "MyTestConstructBastionHost55102049": Object {
+      "DependsOn": Array [
+        "MyTestConstructBastionHostInstanceRoleDefaultPolicyED54846A",
+        "MyTestConstructBastionHostInstanceRoleB822D80A",
+      ],
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "IamInstanceProfile": Object {
+          "Ref": "MyTestConstructBastionHostInstanceProfileB5100B06",
+        },
+        "ImageId": Object {
+          "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter",
+        },
+        "InstanceType": "t3.nano",
+        "SecurityGroupIds": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "MyTestConstructBastionHostInstanceSecurityGroupA456C4B7",
+              "GroupId",
+            ],
+          },
+        ],
+        "SubnetId": Object {
+          "Ref": "TestVpcPrivateSubnet1SubnetCC65D771",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "MyBastionWithIAMAccess",
+          },
+        ],
+        "UserData": Object {
+          "Fn::Base64": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "#!/bin/bash
+yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+yum install -y haproxy
+echo \\"listen postgres
+  bind 0.0.0.0:",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Port",
+                  ],
+                },
+                "
+  timeout connect 10s
+  timeout client 1m
+  timeout server 1m
+  mode tcp
+  server mypostgres ",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Address",
+                  ],
+                },
+                ":",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Port",
+                  ],
+                },
+                "
+  server yourpostgres ",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Address",
+                  ],
+                },
+                ":",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "TestRDSDF309CB7",
+                    "Endpoint.Port",
+                  ],
+                },
+                "
+\\" > /etc/haproxy/haproxy.cfg
+service haproxy restart",
+              ],
+            ],
+          },
+        },
+      },
+      "Type": "AWS::EC2::Instance",
+    },
+    "MyTestConstructBastionHostInstanceProfileB5100B06": Object {
+      "Properties": Object {
+        "Roles": Array [
+          Object {
+            "Ref": "MyTestConstructBastionHostInstanceRoleB822D80A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+    "MyTestConstructBastionHostInstanceRoleB822D80A": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "ec2.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "MyBastionWithIAMAccess",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "MyTestConstructBastionHostInstanceRoleDefaultPolicyED54846A": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ssmmessages:*",
+                "ssm:UpdateInstanceInformation",
+                "ec2messages:*",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "rds-db:connect",
+                "rds:*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:rds-db:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":dbuser:db-ABCDEFGH/iamuser",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":rds:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":db:",
+                      Object {
+                        "Ref": "TestRDSDF309CB7",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "MyTestConstructBastionHostInstanceRoleDefaultPolicyED54846A",
+        "Roles": Array [
+          Object {
+            "Ref": "MyTestConstructBastionHostInstanceRoleB822D80A",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "MyTestConstructBastionHostInstanceSecurityGroupA456C4B7": Object {
+      "Properties": Object {
+        "GroupDescription": "TestStack/MyTestConstruct/BastionHost/Resource/InstanceSecurityGroup",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "MyBastionWithIAMAccess",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "TestRDSDF309CB7": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AllocatedStorage": "100",
+        "CopyTagsToSnapshot": true,
+        "DBInstanceClass": "db.t3.micro",
+        "DBSubnetGroupName": Object {
+          "Ref": "TestRDSSubnetGroup75AFEBE1",
+        },
+        "DeletionProtection": true,
+        "Engine": "postgres",
+        "MasterUserPassword": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{{resolve:secretsmanager:",
+              Object {
+                "Ref": "TestRDSSecret714A3E8B",
+              },
+              ":SecretString:password::}}",
+            ],
+          ],
+        },
+        "MasterUsername": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{{resolve:secretsmanager:",
+              Object {
+                "Ref": "TestRDSSecret714A3E8B",
+              },
+              ":SecretString:username::}}",
+            ],
+          ],
+        },
+        "StorageType": "gp2",
+        "VPCSecurityGroups": Array [
+          Object {
+            "Fn::GetAtt": Array [
+              "TestRDSSecurityGroup07AF5D61",
+              "GroupId",
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBInstance",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "TestRDSSecret714A3E8B": Object {
+      "Properties": Object {
+        "GenerateSecretString": Object {
+          "ExcludeCharacters": "\\"@/\\\\",
+          "GenerateStringKey": "password",
+          "PasswordLength": 30,
+          "SecretStringTemplate": "{\\"username\\":\\"testuser\\"}",
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+    },
+    "TestRDSSecretAttachment3D0D1DF6": Object {
+      "Properties": Object {
+        "SecretId": Object {
+          "Ref": "TestRDSSecret714A3E8B",
+        },
+        "TargetId": Object {
+          "Ref": "TestRDSDF309CB7",
+        },
+        "TargetType": "AWS::RDS::DBInstance",
+      },
+      "Type": "AWS::SecretsManager::SecretTargetAttachment",
+    },
+    "TestRDSSecurityGroup07AF5D61": Object {
+      "Properties": Object {
+        "GroupDescription": "Security group for TestRDS database",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "TestRDSSubnetGroup75AFEBE1": Object {
+      "Properties": Object {
+        "DBSubnetGroupDescription": "Subnet group for TestRDS database",
+        "SubnetIds": Array [
+          Object {
+            "Ref": "TestVpcPrivateSubnet1SubnetCC65D771",
+          },
+          Object {
+            "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBSubnetGroup",
+    },
+    "TestVpcE77CE678": Object {
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "TestVpcIGW9DD53F70": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::InternetGateway",
+    },
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "TestVpcPublicSubnet1NATGatewayA323E3EC",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet1RouteTable469B0105",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPrivateSubnet1RouteTable469B0105": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet1RouteTable469B0105",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPrivateSubnet1SubnetCC65D771",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPrivateSubnet1SubnetCC65D771": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.128.0/18",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet1",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930": Object {
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": Object {
+          "Ref": "TestVpcPublicSubnet2NATGatewayA9858C31",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPrivateSubnet2RouteTableCEF29F7C": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet2",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPrivateSubnet2SubnetDE0C64A2": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.192.0/18",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PrivateSubnet2",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315": Object {
+      "DependsOn": Array [
+        "TestVpcVPCGWF1827B84",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "TestVpcIGW9DD53F70",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPublicSubnet1EIP4884338C": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "TestVpcPublicSubnet1NATGatewayA323E3EC": Object {
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "TestVpcPublicSubnet1EIP4884338C",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "TestVpcPublicSubnet1RouteTable4CBFF871": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPublicSubnet1SubnetA7DB1EDF": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/18",
+        "MapPublicIpOnLaunch": true,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet1",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A": Object {
+      "DependsOn": Array [
+        "TestVpcVPCGWF1827B84",
+      ],
+      "Properties": Object {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": Object {
+          "Ref": "TestVpcIGW9DD53F70",
+        },
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet2RouteTable75B88314",
+        },
+      },
+      "Type": "AWS::EC2::Route",
+    },
+    "TestVpcPublicSubnet2EIP83F7944C": Object {
+      "Properties": Object {
+        "Domain": "vpc",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::EIP",
+    },
+    "TestVpcPublicSubnet2NATGatewayA9858C31": Object {
+      "Properties": Object {
+        "AllocationId": Object {
+          "Fn::GetAtt": Array [
+            "TestVpcPublicSubnet2EIP83F7944C",
+            "AllocationId",
+          ],
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet2Subnet80A14523",
+        },
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::NatGateway",
+    },
+    "TestVpcPublicSubnet2RouteTable75B88314": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "TestVpcPublicSubnet2RouteTable75B88314",
+        },
+        "SubnetId": Object {
+          "Ref": "TestVpcPublicSubnet2Subnet80A14523",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "TestVpcPublicSubnet2Subnet80A14523": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.64.0/18",
+        "MapPublicIpOnLaunch": true,
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "TestStack/TestVpc/PublicSubnet2",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "TestVpcVPCGWF1827B84": Object {
+      "Properties": Object {
+        "InternetGatewayId": Object {
+          "Ref": "TestVpcIGW9DD53F70",
+        },
+        "VpcId": Object {
+          "Ref": "TestVpcE77CE678",
+        },
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+    },
+  },
+}
+`;

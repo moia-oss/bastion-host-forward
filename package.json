@@ -1,0 +1,62 @@
+{
+  "name": "bastion-host-rds-forward",
+  "author": {
+    "name": "Dirk Jablonski",
+    "name": "Guus van Weelden",
+    "name": "Jay Morrow",
+    "name": "Marcel Patzwahl",
+    "name": "Moritz Siuts",
+    "name": "Nathan Beneke"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moia-dev/bastion-host-rds-forward"
+  },
+  "license": "Apache-2.0",
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "jsii",
+    "watch": "jsii -w",
+    "package": "jsii-pacmak",
+    "test": "jest",
+    "lint": "tslint 'lib/**/*.ts{,x}'"
+  },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {}
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.22.0",
+    "@types/jest": "^24.0.22",
+    "@types/node": "10.17.5",
+    "jest": "^24.9.0",
+    "jsii": "^0.21.2",
+    "jsii-pacmak": "^0.21.2",
+    "ts-jest": "^24.1.0",
+    "tslint": "^6.0.0",
+    "typescript": "^3.7.5"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "^1.22.0",
+    "@aws-cdk/aws-ec2": "^1.22.0",
+    "@aws-cdk/aws-sns": "^1.22.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.22.0",
+    "@aws-cdk/aws-sqs": "^1.22.0",
+    "@aws-cdk/aws-iam": "^1.22.0",
+    "@aws-cdk/aws-rds": "^1.22.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-ec2": "^1.22.0",
+    "@aws-cdk/aws-iam": "^1.22.0",
+    "@aws-cdk/aws-rds": "^1.22.0",
+    "@aws-cdk/aws-sns": "^1.22.0",
+    "@aws-cdk/aws-sns-subscriptions": "^1.22.0",
+    "@aws-cdk/aws-sqs": "^1.22.0",
+    "@aws-cdk/core": "^1.22.0"
+  },
+  "jest": {
+    "moduleFileExtensions": ["js"]
+  }
+}
