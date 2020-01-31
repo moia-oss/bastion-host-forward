@@ -57,9 +57,9 @@ export interface BastionHostRDSForwardProps {
 
 export class BastionHostRDSForward extends cdk.Construct {
   /**
-  * @returns the id of the bastion host, which can be used by the session
-  * manager connect command afterwards
-  */
+   * @returns the id of the bastion host, which can be used by the session
+   * manager connect command afterwards
+   */
   public readonly instanceId: string;
 
   constructor(scope: cdk.Construct, id: string, props: BastionHostRDSForwardProps) {
@@ -83,7 +83,7 @@ export class BastionHostRDSForward extends cdk.Construct {
   timeout client 1m
   timeout server 1m
   mode tcp
-` + databasesHaProxy
+` + databasesHaProxy;
 
     bastionHost.instance.userData.addCommands(
       'yum install -y haproxy',
@@ -91,7 +91,7 @@ export class BastionHostRDSForward extends cdk.Construct {
       'service haproxy restart'
     );
 
-    if (props.iamUser != undefined && props.rdsResourceIdentifier != undefined) {
+    if (props.iamUser !== undefined && props.rdsResourceIdentifier !== undefined) {
       bastionHost.instance.addToRolePolicy(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -101,7 +101,7 @@ export class BastionHostRDSForward extends cdk.Construct {
             props.rdsInstance.instanceArn,
           ]
         })
-      )
+      );
     }
 
     this.instanceId = bastionHost.instance.instanceId;

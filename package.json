@@ -1,5 +1,5 @@
 {
-  "name": "bastion-host-rds-forward",
+  "name": "@moia-dev/bastion-host-rds-forward",
   "author": {
     "name": "Dirk Jablonski",
     "name": "Guus van Weelden",
@@ -21,7 +21,7 @@
     "watch": "jsii -w",
     "package": "jsii-pacmak",
     "test": "jest",
-    "lint": "tslint 'lib/**/*.ts{,x}'"
+    "lint": "tslint --project tsconfig.json --config tslint.yaml"
   },
   "jsii": {
     "outdir": "dist",
