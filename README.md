@@ -112,7 +112,7 @@ aws ssm start-session \
 ```
 
 This creates a port forward session on the defined `localPortNumber`. The
-target is the id of the bastion host instance. This will be outputted
+target is the id of the bastion host instance. This will be output
 automatically after deploying the bastion host. The `portNumber` must be the
 same as the RDS Port.
 
