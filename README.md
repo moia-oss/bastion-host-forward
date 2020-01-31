@@ -99,7 +99,7 @@ AWS](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manage
 
 The Session Manager offers a command to forward a specific port. On the Bastion
 Host a HAProxy was installed which forwards the RDS connection on the same
-port, which is used by the respective database. In the following we assume to
+port, which is used by the respective database. In the following example, we show how to
 forward the connection of a PostgreSQL database. PostgreSQL uses 5432 as the
 default port. To forward the connection to our machine we execute the following
 command in the shell:
