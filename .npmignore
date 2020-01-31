@@ -1,13 +1,27 @@
+# The basics
 *.ts
+*.tgz
+*.snk
 !*.d.ts
+!*.js
 
-# CDK asset staging directory
-.cdk.staging
-cdk.out
+# Coverage
+coverage
+.nyc_output
+.nycrc
 
-
-# Exclude jsii outdir
+# Build gear
 dist
+.LAST_BUILD
+.LAST_PACKAGE
+
+*.tsbuildinfo
 
 # Include .jsii
 !.jsii
+
+tsconfig.json
+tslint.yaml
+
+tags
+.circleci

@@ -1,0 +1,62 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/bastion-host-rds-forward
+  docker:
+    - image: circleci/node:12
+
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: npm install
+      - run: npm run lint
+      - run: npm run test
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: npm install
+      - run: npm run build
+      - run: npm run package
+      - run:
+        name: Authenticate with registry
+        command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/bastion-host-rds-forward/.npmrc
+      - run:
+        name: Publish package
+        command: npm publish --access public
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
+  deploy:
+    jobs:
+      - test
+      - deploy
+        requires:
+          - test
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            only: master

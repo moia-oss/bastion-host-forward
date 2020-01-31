@@ -13,7 +13,7 @@ well as IAM authenticated ones.
 Include this library into your project via npm
 
 ```
-npm install <address-needs-to-be-added>
+npm install @moia-dev/bastion-host-rds-forward
 ```
 
 A minimal example for creating the RDS Forward Construct, which will be used via
@@ -22,7 +22,7 @@ username/password could look like this snippet:
 ```typescript
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { BastionHostRDSForward } from 'moia-dev/bastion-host-rds-forward';
+import { BastionHostRDSForward } from '@moia-dev/bastion-host-rds-forward';
 
 export class BastionHostPocStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
