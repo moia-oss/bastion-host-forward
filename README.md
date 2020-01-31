@@ -125,7 +125,7 @@ host will be equipped with access rights accordingly. Namely it will get `rds:*`
 permissions on the RDS you provided and it also allows `rds-db:connect` with
 the provided `iamUser`.
 
-Most of the steps are the same as you would connect to the RDS as it wouldn't
+Most of the steps you would perform to connect to the RDS are the same, since it wouldn't
 be in a VPC.
 
 First you generate the PGPASSWORD on your local machine:
