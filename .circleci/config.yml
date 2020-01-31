@@ -35,11 +35,11 @@ jobs:
       - run: npm run build
       - run: npm run package
       - run:
-        name: Authenticate with registry
-        command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/bastion-host-rds-forward/.npmrc
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/bastion-host-rds-forward/.npmrc
       - run:
-        name: Publish package
-        command: npm publish --access public
+          name: Publish package
+          command: npm publish --access public
       - save_cache:
           paths:
             - node_modules
@@ -52,11 +52,11 @@ workflows:
   deploy:
     jobs:
       - test
-      - deploy
-        requires:
-          - test
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-            only: master
+      - deploy:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              only: master
