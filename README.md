@@ -80,7 +80,7 @@ connect to the RDS.
 
 ## Install the Session-Manager Plugin for AWS-CLI
 
-First of all, you are also able to connect to the Bastion Host via the AWS Web
+You are also able to connect to the Bastion Host via the AWS Web
 Console. For this go to `AWS Systems Manager` -> `Session Manager` -> choose
 the newly created instance -> click on start session.
 
