@@ -157,5 +157,5 @@ Now you can connect to the IAM authenticated RDS like this:
 psql "host=<rds endpoint> port=5432 dbname=<database name> user=<iamUser> sslrootcert=<full path to downloaded cert> sslmode=verify-ca"
 ```
 
-For a full guide on how to connect to a IAM authenticated RDS check out [this
+For a full guide on how to connect to an IAM authenticated RDS check out [this
 guide by AWS](https://aws.amazon.com/premiumsupport/knowledge-center/users-connect-rds-iam/)
