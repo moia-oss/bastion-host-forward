@@ -4,7 +4,7 @@ This CDK Library provides a custom construct `BastionHostRDSForward`. It's an
 extension for the `BastionHostLinux`, which forwards traffic from a RDS
 Instance in the same VPC. This makes it possible to connect to an RDS inside a
 VPC from a developer machine outside of the VPC via the AWS Session Manager.
-The library allows to connect to a RDS via normal username and password, as
+The library allows connections to a basic-auth RDS via username and password, as
 well as IAM authenticated ones.
 
 # Setup
