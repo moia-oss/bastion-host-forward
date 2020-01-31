@@ -11,7 +11,7 @@
    limitations under the License.
 */
 
-import { expect as expectCDK, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as rds from '@aws-cdk/aws-rds';
@@ -90,7 +90,6 @@ test('Bastion Host created for normal username/password access', () => {
         }
       ],
     }));
-    expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });
 
 test('Bastion Host created with extended Role for IAM RDS Connection', () => {
@@ -232,5 +231,4 @@ test('Bastion Host created with extended Role for IAM RDS Connection', () => {
         ]
       }
   }));
-  expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });
