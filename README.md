@@ -16,7 +16,7 @@ Include this library into your project via npm
 npm install <address-needs-to-be-added>
 ```
 
-A minimal example for creating the RDS Forward Construct, which will used via
+A minimal example for creating the RDS Forward Construct, which will be used via
 username/password could look like this snippet:
 
 ```typescript
