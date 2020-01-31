@@ -120,7 +120,7 @@ Now you would be able to connect to the RDS as it would run on localhost:5432.
 
 ## Additional step if you are using IAM Authentication on RDS
 
-If you are having an IAM authenticated RDS, the inline policy of the bastion
+If you have an IAM authenticated RDS, the inline policy of the bastion
 host will be equipped with according access rights. Namely it will get `rds:*`
 permissions on the RDS you provided and it also allows `rds-db:connect` with
 the provided `iamUser`.
