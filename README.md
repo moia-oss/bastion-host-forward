@@ -92,7 +92,7 @@ brew cask install session-manager-plugin
 ```
 
 For Linux it should also be available in the respective package manager. Also
-have a look at []the official installation instructions from
+have a look at [the official installation instructions from
 AWS](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
 
 ## Forward the connection to your machine
