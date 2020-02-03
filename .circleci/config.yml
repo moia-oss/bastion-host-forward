@@ -36,7 +36,7 @@ jobs:
       - run: npm run package
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          command: npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
       - run:
           name: Publish package
           command: npm publish --access public
