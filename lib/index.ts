@@ -25,7 +25,7 @@ export interface BastionHostRDSForwardProps {
   /*
    * The RDS instance where the bastion host should be able to connect to
    */
-  readonly rdsInstance: rds.DatabaseInstance;
+  readonly rdsInstance: rds.IDatabaseInstance;
 
   /*
    * The resource identifier of this.rdsInstance.
