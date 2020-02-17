@@ -20,7 +20,7 @@ export interface BastionHostRDSForwardProps {
   /**
    * The Vpc in which to instantiate the Bastion Host
    */
-  readonly vpc: ec2.Vpc;
+  readonly vpc: ec2.IVpc;
 
   /*
    * The RDS instance where the bastion host should be able to connect to
