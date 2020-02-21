@@ -1,5 +1,5 @@
 [![CircleCI](https://circleci.com/gh/moia-dev/bastion-host-rds-forward/tree/master.svg?style=svg)](https://circleci.com/gh/moia-dev/bastion-host-rds-forward/tree/master)
-![NPM](https://flat.badgen.net/npm/v/@moia-dev/bastion-host-rds-forward)
+[![NPM](https://flat.badgen.net/npm/v/@moia-dev/bastion-host-rds-forward)](https://www.npmjs.com/package/@moia-dev/bastion-host-rds-forward)
 # Bastion Host RDS Forward
 
 This CDK Library provides a custom construct `BastionHostRDSForward`. It's an
