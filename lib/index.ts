@@ -106,10 +106,10 @@ yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/li
 yum install -y haproxy
 echo "${haProxyRule}" > /etc/haproxy/haproxy.cfg
 service haproxy restart
---//`)
+--//`);
 
-    const cfnBastionHost = bastionHost.instance.node.defaultChild as ec2.CfnInstance
-    cfnBastionHost.userData = cdk.Fn.base64(shellCommands.render())
+    const cfnBastionHost = bastionHost.instance.node.defaultChild as ec2.CfnInstance;
+    cfnBastionHost.userData = cdk.Fn.base64(shellCommands.render());
 
     if (props.iamUser !== undefined && props.rdsResourceIdentifier !== undefined) {
       bastionHost.instance.addToRolePolicy(
