@@ -85,11 +85,31 @@ export class BastionHostRDSForward extends cdk.Construct {
   mode tcp
 ` + databasesHaProxy;
 
-    bastionHost.instance.userData.addCommands(
-      'yum install -y haproxy',
-      `echo "${haProxyRule}" > /etc/haproxy/haproxy.cfg`,
-      'service haproxy restart'
-    );
+    const shellCommands = ec2.UserData.custom(
+      `Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+#cloud-config
+cloud_final_modules:
+- [scripts-user, always]
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+#!/bin/bash
+yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+yum install -y haproxy
+echo "${haProxyRule}" > /etc/haproxy/haproxy.cfg
+service haproxy restart
+--//`);
+
+    const cfnBastionHost = bastionHost.instance.node.defaultChild as ec2.CfnInstance;
+    cfnBastionHost.userData = cdk.Fn.base64(shellCommands.render());
 
     if (props.iamUser !== undefined && props.rdsResourceIdentifier !== undefined) {
       bastionHost.instance.addToRolePolicy(
