@@ -36,7 +36,7 @@
     "jsii-pacmak": "^0.21.2",
     "ts-jest": "^24.1.0",
     "tslint": "^6.0.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.2"
   },
   "peerDependencies": {
     "@aws-cdk/core": "^1.22.0",
