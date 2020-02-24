@@ -12,6 +12,7 @@
 */
 
 import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { strict as assert } from 'assert';
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as rds from '@aws-cdk/aws-rds';
@@ -231,4 +232,36 @@ test('Bastion Host created with extended Role for IAM RDS Connection', () => {
         ]
       }
   }));
+});
+
+test('Bastion Host with own securityGroup', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack');
+    const testVpc = new ec2.Vpc(stack, 'TestVpc');
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: testVpc,
+      allowAllOutbound: false,
+      description: 'My test securityGroup description',
+      securityGroupName: 'MyTestSecurityGroupName',
+    });
+
+    const testRds = new rds.DatabaseInstance(stack, 'TestRDS', {
+      masterUsername: 'testuser',
+      engine: rds.DatabaseInstanceEngine.POSTGRES,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+      vpc: testVpc
+    });
+
+    // WHEN
+    const bastionHost = new BastionHostRDSForward.BastionHostRDSForward(stack, 'MyTestConstruct', {
+      vpc: testVpc,
+      databases: ['mypostgres', 'yourpostgres'],
+      name: 'MyBastion',
+      rdsInstance: testRds,
+      securityGroup,
+    });
+    const bastionHostSecurityGroup = bastionHost.securityGroup as ec2.SecurityGroup;
+
+    assert.equal(securityGroup.securityGroupName, bastionHostSecurityGroup.securityGroupName);
+    assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
 });

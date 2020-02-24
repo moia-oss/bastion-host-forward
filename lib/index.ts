@@ -53,6 +53,14 @@ export interface BastionHostRDSForwardProps {
    * Can be omitted, when not using IAM Authentication
    */
   readonly iamUser?: string;
+
+  /**
+   * The security group, which is attached to the bastion host.
+   *
+   * @default If none is provided a default security group is attached, which
+   * doesn't allow incoming traffic and allows outbound traffic to everywhere
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 export class BastionHostRDSForward extends cdk.Construct {
@@ -62,12 +70,23 @@ export class BastionHostRDSForward extends cdk.Construct {
    */
   public readonly instanceId: string;
 
+  /**
+   * @returns the security group attached to the bastion host
+   */
+  public readonly securityGroup: ec2.ISecurityGroup;
+
   constructor(scope: cdk.Construct, id: string, props: BastionHostRDSForwardProps) {
     super(scope, id);
+
+    this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'BastionHostSecurityGroup', {
+        vpc: props.vpc,
+        allowAllOutbound: true,
+    });
 
     const bastionHost = new ec2.BastionHostLinux(this, 'BastionHost', {
       instanceName: props.name || 'BastionHost',
       vpc: props.vpc,
+      securityGroup: this.securityGroup,
     });
 
     const databasesHaProxy = props.databases.reduce(
