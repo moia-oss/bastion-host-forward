@@ -24,14 +24,14 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "^1.31.0",
-    "@types/jest": "^24.0.22",
-    "@types/node": "10.17.5",
-    "jest": "^24.9.0",
+    "@types/jest": "^25.2.1",
+    "@types/node": "13.11.0",
+    "jest": "^25.2.7",
     "jsii": "^1.1.0",
     "jsii-pacmak": "^1.1.0",
-    "ts-jest": "^24.1.0",
-    "tslint": "^6.0.0",
-    "typescript": "^3.7.5"
+    "ts-jest": "^25.3.1",
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3"
   },
   "peerDependencies": {
     "@aws-cdk/core": "^1.31.0",
