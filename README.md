@@ -2,12 +2,12 @@
 [![NPM](https://flat.badgen.net/npm/v/@moia-dev/bastion-host-rds-forward)](https://www.npmjs.com/package/@moia-dev/bastion-host-rds-forward)
 # Bastion Host RDS Forward
 
-This CDK Library provides a custom construct `BastionHostRDSForward`. It's an
-extension for the `BastionHostLinux`, which forwards traffic from a RDS
-Instance in the same VPC. This makes it possible to connect to an RDS inside a
-VPC from a developer machine outside of the VPC via the AWS Session Manager.
-The library allows connections to a basic-auth RDS via username and password, as
-well as IAM authenticated ones.
+This CDK Library provides custom constructs `BastionHostRDSForward` and
+`BastionHostRedisForward`. It's an extension for the `BastionHostLinux`, which
+forwards traffic from an RDS Instance or Redis in the same VPC. This makes it
+possible to connect to a service inside a VPC from a developer machine outside of
+the VPC via the AWS Session Manager. The library allows connections to a
+basic-auth RDS via username and password or IAM, as well as to Redis clusters.
 
 # Setup
 
@@ -15,7 +15,7 @@ well as IAM authenticated ones.
 Include this library into your project via npm
 
 ```
-npm install @moia-dev/bastion-host-rds-forward
+npm install @moia-dev/bastion-host-forward
 ```
 
 A minimal example for creating the RDS Forward Construct, which will be used via
@@ -52,7 +52,7 @@ export class BastionHostPocStack extends cdk.Stack {
       }
     );
 
-    new BastionHostRDSForward.BastionHostRDSForward(this, 'BastionHost', {
+    new BastionHostRDSForward(this, 'BastionHost', {
       vpc: vpc,
       rdsInstance: rdsInstance,
       databases: ['my-postres-db'],
@@ -80,6 +80,17 @@ that IPs from within the VPC are able to connect to the RDS Database. This
 needs to be set in the RDS's Security Group. Otherwise the Bastion Host can't
 connect to the RDS.
 
+
+The instantiation of a BastionHostRedisForward works very similar to the RDS
+example, except that you pass a CfnCacheCluster to the BastionHost like this:
+
+```typescript
+new BastionHostRedisForward(this, 'RedisBastion', {
+  elasticacheCluster: cluster,
+  vpc: vpc,
+});
+```
+
 ## Install the Session-Manager Plugin for AWS-CLI
 
 You are also able to connect to the Bastion Host via the AWS Web
@@ -100,10 +111,13 @@ AWS](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manage
 ## Forward the connection to your machine
 
 The Session Manager offers a command to forward a specific port. On the Bastion
-Host a HAProxy was installed which forwards the RDS connection on the same
-port, which is used by the respective database. In the following example, we show how to
-forward the connection of a PostgreSQL database. PostgreSQL uses 5432 as the
-default port. To forward the connection to our machine we execute the following
+Host a HAProxy was installed which forwards the connection on the same
+port as the specified service. Those are by default:
+- RDS: 5432
+- Redis: 6739
+
+In the following example, we show how to forward the connection of a PostgreSQL
+database. To forward the connection to our machine we execute the following
 command in the shell:
 
 ```

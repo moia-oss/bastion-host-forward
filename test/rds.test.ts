@@ -16,7 +16,7 @@ import { strict as assert } from 'assert';
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as rds from '@aws-cdk/aws-rds';
-import BastionHostRDSForward = require('../lib/index');
+import { BastionHostRDSForward } from '../lib/rds';
 
 test('Bastion Host created for normal username/password access', () => {
     const app = new cdk.App();
@@ -30,9 +30,8 @@ test('Bastion Host created for normal username/password access', () => {
     });
 
     // WHEN
-    new BastionHostRDSForward.BastionHostRDSForward(stack, 'MyTestConstruct', {
+    new BastionHostRDSForward(stack, 'MyTestConstruct', {
       vpc: testVpc,
-      databases: ['mypostgres', 'yourpostgres'],
       name: 'MyBastion',
       rdsInstance: testRds,
     });
@@ -51,21 +50,7 @@ test('Bastion Host created for normal username/password access', () => {
                   'Endpoint.Port'
                 ]
               },
-              '\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server mypostgres ',
-              {
-                'Fn::GetAtt': [
-                  'TestRDSDF309CB7',
-                  'Endpoint.Address'
-                ]
-              },
-              ':',
-              {
-                'Fn::GetAtt': [
-                  'TestRDSDF309CB7',
-                  'Endpoint.Port'
-                ]
-              },
-              '\n  server yourpostgres ',
+              '\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server service ',
               {
                 'Fn::GetAtt': [
                   'TestRDSDF309CB7',
@@ -105,9 +90,8 @@ test('Bastion Host created with extended Role for IAM RDS Connection', () => {
     });
 
     // WHEN
-    new BastionHostRDSForward.BastionHostRDSForward(stack, 'MyTestConstruct', {
+    new BastionHostRDSForward(stack, 'MyTestConstruct', {
       vpc: testVpc,
-      databases: ['mypostgres', 'yourpostgres'],
       name: 'MyBastionWithIAMAccess',
       rdsInstance: testRds,
       iamUser: 'iamuser',
@@ -128,21 +112,7 @@ test('Bastion Host created with extended Role for IAM RDS Connection', () => {
                   'Endpoint.Port'
                 ]
               },
-              '\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server mypostgres ',
-              {
-                'Fn::GetAtt': [
-                  'TestRDSDF309CB7',
-                  'Endpoint.Address'
-                ]
-              },
-              ':',
-              {
-                'Fn::GetAtt': [
-                  'TestRDSDF309CB7',
-                  'Endpoint.Port'
-                ]
-              },
-              '\n  server yourpostgres ',
+              '\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server service ',
               {
                 'Fn::GetAtt': [
                   'TestRDSDF309CB7',
@@ -253,9 +223,8 @@ test('Bastion Host with own securityGroup', () => {
     });
 
     // WHEN
-    const bastionHost = new BastionHostRDSForward.BastionHostRDSForward(stack, 'MyTestConstruct', {
+    const bastionHost = new BastionHostRDSForward(stack, 'MyTestConstruct', {
       vpc: testVpc,
-      databases: ['mypostgres', 'yourpostgres'],
       name: 'MyBastion',
       rdsInstance: testRds,
       securityGroup,
