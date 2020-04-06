@@ -1,16 +1,11 @@
 {
-  "name": "@moia-dev/bastion-host-rds-forward",
+  "name": "@moia-dev/bastion-host-forward",
   "author": {
-    "name": "Dirk Jablonski",
-    "name": "Guus van Weelden",
-    "name": "Jay Morrow",
-    "name": "Marcel Patzwahl",
-    "name": "Moritz Siuts",
-    "name": "Nathan Beneke"
+    "name": "MOIA GmbH"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/moia-dev/bastion-host-rds-forward"
+    "url": "https://github.com/moia-dev/bastion-host-forward"
   },
   "license": "Apache-2.0",
   "version": "0.2.0",
@@ -28,29 +23,34 @@
     "targets": {}
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.22.0",
+    "@aws-cdk/assert": "^1.31.0",
     "@types/jest": "^24.0.22",
     "@types/node": "10.17.5",
     "jest": "^24.9.0",
-    "jsii": "^0.21.2",
-    "jsii-pacmak": "^0.21.2",
+    "jsii": "^1.1.0",
+    "jsii-pacmak": "^1.1.0",
     "ts-jest": "^24.1.0",
     "tslint": "^6.0.0",
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^1.22.0",
-    "@aws-cdk/aws-ec2": "^1.22.0",
-    "@aws-cdk/aws-iam": "^1.22.0",
-    "@aws-cdk/aws-rds": "^1.22.0"
+    "@aws-cdk/core": "^1.31.0",
+    "@aws-cdk/aws-ec2": "^1.31.0",
+    "@aws-cdk/aws-iam": "^1.31.0",
+    "@aws-cdk/aws-rds": "^1.31.0",
+    "@aws-cdk/aws-elasticache": "^1.31.0",
+    "constructs": "^2.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.22.0",
-    "@aws-cdk/aws-iam": "^1.22.0",
-    "@aws-cdk/aws-rds": "^1.22.0",
-    "@aws-cdk/core": "^1.22.0"
+    "@aws-cdk/aws-ec2": "^1.31.0",
+    "@aws-cdk/aws-elasticache": "^1.31.0",
+    "@aws-cdk/aws-iam": "^1.31.0",
+    "@aws-cdk/aws-rds": "^1.31.0",
+    "@aws-cdk/core": "^1.31.0"
   },
   "jest": {
-    "moduleFileExtensions": ["js"]
+    "moduleFileExtensions": [
+      "js"
+    ]
   }
 }
