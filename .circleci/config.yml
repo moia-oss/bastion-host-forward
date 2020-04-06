@@ -1,7 +1,7 @@
 version: 2
 
 defaults: &defaults
-  working_directory: ~/bastion-host-rds-forward
+  working_directory: ~/bastion-host-forward
   docker:
     - image: circleci/node:12
 
