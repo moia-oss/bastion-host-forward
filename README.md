@@ -55,7 +55,6 @@ export class BastionHostPocStack extends cdk.Stack {
     new BastionHostRDSForward(this, 'BastionHost', {
       vpc: vpc,
       rdsInstance: rdsInstance,
-      databases: ['my-postres-db'],
       name: 'MyBastionHost',
     });
 ```
@@ -65,10 +64,9 @@ If the RDS is IAM Authenticated you also need to add an `iam_user` and
 
 ```typescript
 ...
-new BastionHostRDSForward.BastionHostRDSForward(this, 'BastionHost', {
+new BastionHostRDSForward(this, 'BastionHost', {
   vpc: vpc,
   rdsInstance: rdsInstance,
-  databases: ['my-postres-db'],
   name: 'MyBastionHost',
   iamUser: 'iamusername',
   rdsResourceIdentifier: 'db-ABCDEFGHIJKL123'
