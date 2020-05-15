@@ -16,7 +16,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
 /** @internal */
-export interface BastionHostForwardProps extends BastionHostForwardBaseProps {
+interface BastionHostForwardProps extends BastionHostForwardBaseProps {
   /**
    * The address of the service to forward to
    */
@@ -28,7 +28,6 @@ export interface BastionHostForwardProps extends BastionHostForwardBaseProps {
   readonly port: string;
 }
 
-/** @internal */
 export class BastionHostForward extends cdk.Construct {
   /**
    * @returns the id of the bastion host, which can be used by the session
@@ -42,15 +41,15 @@ export class BastionHostForward extends cdk.Construct {
   public securityGroup?: ec2.ISecurityGroup;
 
   /**
-   *
+   * @returns The BastionHost Instance
    */
   protected readonly bastionHost: ec2.BastionHostLinux;
 
-  constructor(scope: cdk.Construct, id: string, props: BastionHostForwardProps) {
+  protected constructor(scope: cdk.Construct, id: string, props: BastionHostForwardProps) {
     super(scope, id);
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'BastionHostSecurityGroup', {
-        vpc: props.vpc,
-        allowAllOutbound: true,
+      vpc: props.vpc,
+      allowAllOutbound: true,
     });
 
     this.bastionHost = new ec2.BastionHostLinux(this, 'BastionHost', {
