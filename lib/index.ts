@@ -12,5 +12,6 @@
 */
 
 export * from './bastion-host-forward-base-props';
+export * from './bastion-host-forward';
 export * from './rds';
 export * from './redis';
