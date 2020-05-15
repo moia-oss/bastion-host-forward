@@ -11,5 +11,6 @@
    limitations under the License.
 */
 
+export * from './bastion-host-forward-base-props';
 export * from './rds';
 export * from './redis';

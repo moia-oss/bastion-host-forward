@@ -13,7 +13,6 @@
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 
-/** @internal */
 export interface BastionHostForwardBaseProps {
 
   /**
