@@ -13,20 +13,7 @@
 
 import * as cdk from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
-
-/** @internal */
-interface BastionHostForwardProps extends BastionHostForwardBaseProps {
-  /**
-   * The address of the service to forward to
-   */
-  readonly address: string;
-
-  /**
-   * The port of the service to forward to
-   */
-  readonly port: string;
-}
+import { BastionHostForwardProps } from './bastion-host-forward-props';
 
 export class BastionHostForward extends cdk.Construct {
   /**
