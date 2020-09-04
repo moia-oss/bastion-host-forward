@@ -15,7 +15,7 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: npm install
+      - run: npm ci
       - run: npm run lint
       - run: npm run test
       - run: npm run build
@@ -32,8 +32,7 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: npm install
-      - run: npm run build
+      - run: npm run ci
       - run: npm run package
       - run:
           name: Authenticate with registry
