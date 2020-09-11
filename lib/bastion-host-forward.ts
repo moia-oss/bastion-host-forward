@@ -89,6 +89,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 #!/bin/bash
+mount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc
 yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 yum install -y haproxy
 echo "${this.generateHaProxyBaseConfig(address, port)}" > /etc/haproxy/haproxy.cfg
