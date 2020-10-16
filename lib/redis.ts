@@ -12,28 +12,20 @@
 */
 
 import * as cdk from '@aws-cdk/core';
-import * as elasticache from '@aws-cdk/aws-elasticache';
-import { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
+import { BastionHostForwardProps } from './bastion-host-forward-props';
 import { BastionHostForward } from './bastion-host-forward';
-
-export interface BastionHostRedisForwardProps extends BastionHostForwardBaseProps {
-  /*
-   * The RDS instance where the bastion host should be able to connect to
-   */
-  readonly elasticacheCluster: elasticache.CfnCacheCluster;
-}
 
 /*
  * Creates a Bastion Host to forward to a Redis Cluster
  */
 export class BastionHostRedisForward extends BastionHostForward {
-  constructor(scope: cdk.Construct, id: string, props: BastionHostRedisForwardProps) {
+  constructor(scope: cdk.Construct, id: string, props: BastionHostForwardProps) {
     super(scope, id, {
       vpc: props.vpc,
       name: props.name,
       securityGroup: props.securityGroup,
-      address: props.elasticacheCluster.attrRedisEndpointAddress,
-      port: props.elasticacheCluster.attrRedisEndpointPort
+      address: props.address,
+      port: props.port
     });
   }
 }

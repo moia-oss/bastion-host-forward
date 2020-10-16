@@ -70,6 +70,6 @@ export class BastionHostRDSForward extends BastionHostForward {
    * @returns the resource ARN for the the rds-db:connect action
    */
   private genDbUserArnFromRdsArn(dbIdentifier: string, dbUser: string): string {
-    return 'arn:aws:rds-db:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:dbuser:' + dbIdentifier + '/' + dbUser;
+    return `arn:aws:rds-db:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:dbuser:${dbIdentifier}/${dbUser}`;
   }
 }
