@@ -23,7 +23,6 @@ test('Bastion Host created for normal username/password access', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     const testVpc = new ec2.Vpc(stack, 'TestVpc');
     const testRds = new rds.DatabaseInstance(stack, 'TestRDS', {
-      masterUsername: 'testuser',
       engine: rds.DatabaseInstanceEngine.POSTGRES,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
       vpc: testVpc
@@ -83,7 +82,6 @@ test('Bastion Host created with extended Role for IAM RDS Connection', () => {
     const stack = new cdk.Stack(app, 'TestStack');
     const testVpc = new ec2.Vpc(stack, 'TestVpc');
     const testRds = new rds.DatabaseInstance(stack, 'TestRDS', {
-      masterUsername: 'testuser',
       engine: rds.DatabaseInstanceEngine.POSTGRES,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
       vpc: testVpc
@@ -215,7 +213,6 @@ test('Bastion Host with own securityGroup', () => {
     });
 
     const testRds = new rds.DatabaseInstance(stack, 'TestRDS', {
-      masterUsername: 'testuser',
       engine: rds.DatabaseInstanceEngine.POSTGRES,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
       vpc: testVpc
