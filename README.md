@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/moia-dev/bastion-host-forward/tree/master.svg?style=svg)](https://circleci.com/gh/moia-dev/bastion-host-forward/tree/master)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmoia-dev%2Fbastion-host-forward%2Fbadge&style=for-the-badge)](https://actions-badge.atrox.dev/moia-dev/bastion-host-forward/goto)
 [![NPM](https://flat.badgen.net/npm/v/@moia-dev/bastion-host-forward)](https://www.npmjs.com/package/@moia-dev/bastion-host-forward)
 # Bastion Host Forward
 
