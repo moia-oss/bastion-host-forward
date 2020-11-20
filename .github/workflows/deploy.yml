@@ -1,0 +1,28 @@
+name: deploy
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: NPM Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Package
+        run: npm run package
+      - name: Authenticate with Registry
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+      - name: Publish
+        run: npm publish --access public
