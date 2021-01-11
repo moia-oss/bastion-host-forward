@@ -5,7 +5,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/moia-dev/bastion-host-forward"
+    "url": "https://github.com/moia-oss/bastion-host-forward"
   },
   "license": "Apache-2.0",
   "version": "0.6.0",
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^1.82.0",
     "@types/jest": "^26.0.19",
-    "@types/node": "14.14.17",
+    "@types/node": "14.14.19",
     "jest": "^25.5.4",
     "jsii": "^1.16.0",
     "jsii-pacmak": "^1.16.0",
