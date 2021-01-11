@@ -46,7 +46,11 @@ export class BastionHostForward extends cdk.Construct {
     });
 
     const cfnBastionHost = this.bastionHost.instance.node.defaultChild as ec2.CfnInstance;
-    const shellCommands = this.generateEc2UserData(props.address, props.port);
+    const shellCommands = this.generateEc2UserData(
+      props.address,
+      props.port,
+      props.timeout ?? 10,
+    );
     cfnBastionHost.userData = cdk.Fn.base64(shellCommands.render());
 
     this.instanceId = this.bastionHost.instance.instanceId;
@@ -55,10 +59,10 @@ export class BastionHostForward extends cdk.Construct {
   /*
    * Creates a Config entry for HAProxy with the given address and port
    */
-  private generateHaProxyBaseConfig(address: string, port: string): string {
+  private generateHaProxyBaseConfig(address: string, port: string, timeout: number): string {
     return `listen database
   bind 0.0.0.0:${port}
-  timeout connect 10s
+  timeout connect ${timeout}s
   timeout client 1m
   timeout server 1m
   mode tcp
@@ -71,7 +75,7 @@ export class BastionHostForward extends cdk.Construct {
    * The User Data is written in MIME format to override the User Data
    * application behavior to be applied on every machine restart
    */
-  private generateEc2UserData(address: string, port: string): ec2.UserData {
+  private generateEc2UserData(address: string, port: string, timeout: number): ec2.UserData {
     return ec2.UserData.custom(
       `Content-Type: multipart/mixed; boundary="//"
 MIME-Version: 1.0
@@ -92,7 +96,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 mount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc
 yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 yum install -y haproxy
-echo "${this.generateHaProxyBaseConfig(address, port)}" > /etc/haproxy/haproxy.cfg
+echo "${this.generateHaProxyBaseConfig(address, port, timeout)}" > /etc/haproxy/haproxy.cfg
 service haproxy restart
 --//`);
   }

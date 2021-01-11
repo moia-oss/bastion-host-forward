@@ -34,4 +34,11 @@ export interface BastionHostForwardBaseProps {
    * doesn't allow incoming traffic and allows outbound traffic to everywhere
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+  * The HAProxy timeout in seconds
+  *
+  * @default - 10
+  */
+  readonly timeout?: number;
 }
