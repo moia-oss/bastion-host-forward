@@ -25,7 +25,8 @@ export class BastionHostRedisForward extends BastionHostForward {
       name: props.name,
       securityGroup: props.securityGroup,
       address: props.address,
-      port: props.port
+      port: props.port,
+      clientTimeout: props.clientTimeout,
     });
   }
 }

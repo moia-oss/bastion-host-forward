@@ -11,3 +11,4 @@ export interface BastionHostForwardProps extends BastionHostForwardBaseProps {
    */
   readonly port: string;
 }
+

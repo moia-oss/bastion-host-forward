@@ -33,6 +33,7 @@ test('Bastion Host created for normal username/password access', () => {
       vpc: testVpc,
       name: 'MyBastion',
       rdsInstance: testRds,
+      clientTimeout: 2,
     });
 
     // THEN
@@ -49,7 +50,7 @@ test('Bastion Host created for normal username/password access', () => {
                   'Endpoint.Port'
                 ]
               },
-              '\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server service ',
+              '\n  timeout connect 10s\n  timeout client 2m\n  timeout server 1m\n  mode tcp\n  server service ',
               {
                 'Fn::GetAtt': [
                   'TestRDSDF309CB7',
