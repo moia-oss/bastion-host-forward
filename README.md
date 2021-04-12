@@ -11,37 +11,39 @@ basic-auth RDS via username and password or IAM, as well as to Redis clusters.
 
 # Setup
 
-## Instantiating the Bastion Host
-Include this library into your project via npm
+First of all you need to include this library into your project via npm
 
 ```
 npm install @moia-dev/bastion-host-forward
 ```
+
+## Instantiating the Bastion Host for RDS
 
 A minimal example for creating the RDS Forward Construct, which will be used via
 username/password could look like this snippet:
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
+import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
+import { DatabaseInstance } from '@aws-cdk/aws-rds';
 import { BastionHostRDSForward } from '@moia-dev/bastion-host-rds-forward';
 
 export class BastionHostPocStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = ec2.Vpc.fromLookup(this, 'MyVpc', {
+    const vpc = Vpc.fromLookup(this, 'MyVpc', {
       vpcId: 'vpc-0123456789abcd'
     });
 
-    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+    const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'RDSSecurityGroup',
       'odsufa5addasdj',
       { mutable: false }
     );
 
-    const rdsInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(
+    const rdsInstance = DatabaseInstance.fromDatabaseInstanceAttributes(
       this,
       'MyDb',
       {
@@ -78,6 +80,7 @@ that IPs from within the VPC are able to connect to the RDS Database. This
 needs to be set in the RDS's Security Group. Otherwise the Bastion Host can't
 connect to the RDS.
 
+## Instantiating the Bastion Host for Redis
 
 The instantiation of a BastionHostRedisForward works very similar to the RDS
 example, except that you pass a CfnCacheCluster to the BastionHost like this:
@@ -89,7 +92,64 @@ new BastionHostRedisForward(this, 'RedisBastion', {
 });
 ```
 
-## Install the Session-Manager Plugin for AWS-CLI
+## Instantiating the Bastion Host for Redshift
+
+A minimal example for creating the Redshift Forward Construct, which will be used via
+username/password could look like this snippet. It's very similar to the RDS
+version. The only difference is that we need a Redshift Cluster object instead
+of a RDS DatabaseInstance:
+
+```typescript
+import * as cdk from '@aws-cdk/core';
+import { BastionHostRedshiftForward } from '@moia-dev/bastion-host-forward';
+import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
+import { Cluster } from '@aws-cdk/aws-redshift';
+
+export class PocRedshiftStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const vpc = Vpc.fromLookup(this, 'MyVpc', {
+      vpcId: 'vpc-12345678'
+    });
+
+    const securityGroup = SecurityGroup.fromSecurityGroupId(
+      this,
+      'BastionHostSecurityGroup',
+      'sg-1245678,
+      { mutable: false }
+    );
+
+    const redshiftCluster = Cluster.fromClusterAttributes(this, 'RedshiftCluster', {
+      clusterName: 'myRedshiftClusterName',
+      clusterEndpointAddress: 'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
+      clusterEndpointPort: 5439,
+      
+    });
+
+    new BastionHostRedshiftForward(this, 'BastionHostRedshiftForward', {
+      vpc,
+      name: 'MyRedshiftBastionHost',
+      securityGroup,
+      redshiftCluster
+    })
+  }
+}
+```
+
+## Deploying the Bastion Host
+
+When you setup the Bastion Host for the Database you want to connect to, you can
+now go forward to actually deploy the Bastion Host:
+
+```
+cdk deploy
+```
+
+When the EC2 Instance for you Bastion Host is visible you can continue with the
+setup of the Session-Manager Plugin on your Machine
+
+# Install the Session-Manager Plugin for AWS-CLI
 
 You are also able to connect to the Bastion Host via the AWS Web
 Console. For this go to `AWS Systems Manager` -> `Session Manager` -> choose
@@ -113,6 +173,7 @@ Host a HAProxy was installed which forwards the connection on the same
 port as the specified service. Those are by default:
 - RDS: 5432
 - Redis: 6739
+- Redshift: 5439
 
 In the following example, we show how to forward the connection of a PostgreSQL
 database. To forward the connection to our machine we execute the following

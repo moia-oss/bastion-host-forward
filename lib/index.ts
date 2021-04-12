@@ -16,3 +16,4 @@ export * from './bastion-host-forward-props';
 export * from './bastion-host-forward';
 export * from './rds';
 export * from './redis';
+export * from './redshift';
