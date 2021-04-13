@@ -20,9 +20,12 @@ jobs:
         run: npm run build
       - name: Package
         run: npm run package
-      - name: Authenticate with Registry
+      - name: Publish to NPM
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-      - name: Publish
-        run: npm publish --access public
+        run: npm run release-npm
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TWINE_TOKEN }}
+        run: npm run release-pypi
