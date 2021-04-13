@@ -11,13 +11,30 @@ basic-auth RDS via username and password or IAM, as well as to Redis clusters.
 
 # Setup
 
-First of all you need to include this library into your project via npm
+First of all you need to include this library into your project for the language
+you want to deploy the bastion host with
+
+## Javascript/Typescript
+
+For Javascript/Typescript the library can be installed via npm:
 
 ```
 npm install @moia-dev/bastion-host-forward
 ```
 
-## Instantiating the Bastion Host for RDS
+## Python
+
+For python the library can be installed via pip:
+
+```
+pip install moia-dev.bastion-host-forward
+```
+
+# Examples
+The following section includes some examples in supported languages how the
+Bastion Host can be created for different databases.
+
+## Creating the Bastion Host for RDS in Typescript
 
 A minimal example for creating the RDS Forward Construct, which will be used via
 username/password could look like this snippet:
@@ -80,7 +97,7 @@ that IPs from within the VPC are able to connect to the RDS Database. This
 needs to be set in the RDS's Security Group. Otherwise the Bastion Host can't
 connect to the RDS.
 
-## Instantiating the Bastion Host for Redis
+## Creating the Bastion Host for Redis in Typescript
 
 The instantiation of a BastionHostRedisForward works very similar to the RDS
 example, except that you pass a CfnCacheCluster to the BastionHost like this:
@@ -92,7 +109,9 @@ new BastionHostRedisForward(this, 'RedisBastion', {
 });
 ```
 
-## Instantiating the Bastion Host for Redshift
+## Creating the Bastion Host for Redshift
+
+### Typescript
 
 A minimal example for creating the Redshift Forward Construct, which will be used via
 username/password could look like this snippet. It's very similar to the RDS
@@ -135,6 +154,46 @@ export class PocRedshiftStack extends cdk.Stack {
     })
   }
 }
+```
+
+### Python
+
+```python
+from aws_cdk import core as cdk
+from aws_cdk import aws_redshift
+from aws_cdk import aws_ec2
+from moia_dev import bastion_host_forward
+
+
+class PocRedshiftStack(cdk.Stack):
+
+    def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
+        vpc = aws_ec2.Vpc.from_lookup(
+            self,
+            "vpc",
+            vpc_id="vpc-12345678"
+        )
+        security_group = aws_ec2.SecurityGroup.from_security_group_id(
+            self,
+            "sec_group", "sg-12345678"
+        )
+        redshiftCluster = aws_redshift.Cluster.from_cluster_attributes(
+            self,
+            "cluster",
+            cluster_name="myRedshiftClusterName",
+            cluster_endpoint_address="myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com",
+            cluster_endpoint_port=5439
+        )
+
+        bastion_host_forward.BastionHostRedshiftForward(
+            self,
+            "bastion-host",
+            name="my-vastion-host",
+            security_group=security_group,
+            redshift_cluster=redshiftCluster,
+            vpc=vpc
+        )
 ```
 
 ## Deploying the Bastion Host
