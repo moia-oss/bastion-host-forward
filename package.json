@@ -34,7 +34,7 @@
     "@types/jest": "^26.0.22",
     "@types/node": "14.14.37",
     "jest": "^25.5.4",
-    "jsii": "^1.26.0",
+    "jsii": "^1.29.0",
     "jsii-pacmak": "^1.26.0",
     "jsii-release": "^0.2.18",
     "ts-jest": "^25.5.1",
