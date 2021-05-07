@@ -3,12 +3,13 @@
 [![PyPI version](https://badge.fury.io/py/moia-dev.bastion-host-forward.svg)](https://badge.fury.io/py/moia-dev.bastion-host-forward)
 # Bastion Host Forward
 
-This CDK Library provides custom constructs `BastionHostRDSForward` and
-`BastionHostRedisForward`. It's an extension for the `BastionHostLinux`, which
-forwards traffic from an RDS Instance or Redis in the same VPC. This makes it
-possible to connect to a service inside a VPC from a developer machine outside of
-the VPC via the AWS Session Manager. The library allows connections to a
-basic-auth RDS via username and password or IAM, as well as to Redis clusters.
+This CDK Library provides custom constructs `BastionHostRDSForward`,
+`BastionHostRedisForward` and `BastionHostRedshiftForward`. It's an extension
+for the `BastionHostLinux`, which forwards traffic from an RDS Instance or Redis
+in the same VPC. This makes it possible to connect to a service inside a VPC
+from a developer machine outside of the VPC via the AWS Session Manager. The
+library allows connections to a basic-auth RDS via username and password or IAM,
+as well as to Redis clusters.
 
 # Setup
 
