@@ -1,5 +1,5 @@
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmoia-dev%2Fbastion-host-forward%2Fbadge&style=flat)](https://actions-badge.atrox.dev/moia-dev/bastion-host-forward/goto)
-[![npm version](https://badge.fury.io/js/%40moia-dev%2Fbastion-host-forward.svg)](https://badge.fury.io/js/%40moia-dev%2Fbastion-host-forward)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmoia-oss%2Fbastion-host-forward%2Fbadge&style=flat)](https://actions-badge.atrox.dev/moia-dev/bastion-host-forward/goto)
+[![npm version](https://badge.fury.io/js/%40moia-oss%2Fbastion-host-forward.svg)](https://badge.fury.io/js/%40moia-dev%2Fbastion-host-forward)
 [![PyPI version](https://badge.fury.io/py/moia-dev.bastion-host-forward.svg)](https://badge.fury.io/py/moia-dev.bastion-host-forward)
 # Bastion Host Forward
 
