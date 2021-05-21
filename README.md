@@ -21,7 +21,7 @@ you want to deploy the bastion host with
 For Javascript/Typescript the library can be installed via npm:
 
 ```
-npm install @moia-dev/bastion-host-forward
+npm install @moia-oss/bastion-host-forward
 ```
 
 ## Python
