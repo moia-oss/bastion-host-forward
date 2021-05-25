@@ -3,13 +3,46 @@
 [![PyPI version](https://badge.fury.io/py/moia-dev.bastion-host-forward.svg)](https://badge.fury.io/py/moia-dev.bastion-host-forward)
 # Bastion Host Forward
 
-This CDK Library provides custom constructs `BastionHostRDSForward`,
-`BastionHostRedisForward` and `BastionHostRedshiftForward`. It's an extension
-for the `BastionHostLinux`, which forwards traffic from an RDS Instance or Redis
-in the same VPC. This makes it possible to connect to a service inside a VPC
-from a developer machine outside of the VPC via the AWS Session Manager. The
-library allows connections to a basic-auth RDS via username and password or IAM,
-as well as to Redis clusters.
+This is a CDK Library providing custom bastion host constructs for connecting to
+several AWS data services. When building secure infrastructure, we face the
+problem that the data layer is only accessible from inside the VPC. These
+Bastion Hosts close the gap and let you interact with the data layer as they
+would be hosted on your machine.
+
+Currently the following AWS Services are supported:
+
+| AWS Service       | CDK Construct                        |
+| ----------------- | ------------------------------------ |
+| Aurora Serverless | `BastionHostAuroraServerlessForward` |
+| Redis             | `BastionHostRedisForward`            |
+| Redshift          | `BastionHostRedshiftForward`         |
+| RDS               | `BastionHostRDSForward`              |
+
+# Technical details
+
+The bastion hosts are extensions of the official `BastionHostLinux` CDK
+construct, which allows connecting to the bastion host and from there connect to
+the data layer. 
+
+These constructs additionally install and configure
+[HAProxy](https://www.haproxy.org/) to forward the endpoint of the chosen data
+store. They also have the SSM Agent to the bastion host, so you can connect via
+the AWS Session Manager. Connecting to a bastion host via the AWS Session
+Manager brings a couple of benefits:
+
+- No management of SSH Keys anymore
+- AWS IAM defines who is able to connect to the bastion host
+- Bastion Hosts don't need to be hosted in public subnets anymore
+- Easy port forwarding with a single command
+
+The combination of having a local port forward via SSM Session Manager and the
+HAProxy on the bastion host itself let you interact with the data layer as they
+would be on your machine. This means you can connect to them via localhost:<port
+of the data service> and also use visual tools like DataGrip or MySQL Workbench
+to interact with the data store in AWS. The following graphic illustrates the
+described procedure on the example of RDS:
+
+![bastion-host-forward](doc/bastion-host-forward.png)
 
 # Setup
 
