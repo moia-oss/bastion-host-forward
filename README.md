@@ -36,7 +36,7 @@ pip install moia-dev.bastion-host-forward
 The following section includes some examples in supported languages how the
 Bastion Host can be created for different databases.
 
-## Creating the Bastion Host for RDS in Typescript
+## Bastion Host for RDS in Typescript
 
 A minimal example for creating the RDS Forward Construct, which will be used via
 username/password could look like this snippet:
@@ -99,7 +99,7 @@ that IPs from within the VPC are able to connect to the RDS Database. This
 needs to be set in the RDS's Security Group. Otherwise the Bastion Host can't
 connect to the RDS.
 
-## Creating the Bastion Host for Redis in Typescript
+## Bastion Host for Redis in Typescript
 
 The instantiation of a BastionHostRedisForward works very similar to the RDS
 example, except that you pass a CfnCacheCluster to the BastionHost like this:
@@ -111,7 +111,7 @@ new BastionHostRedisForward(this, 'RedisBastion', {
 });
 ```
 
-## Creating the Bastion Host for Redshift
+## Bastion Host for Redshift
 
 ### Typescript
 
@@ -137,7 +137,7 @@ export class PocRedshiftStack extends cdk.Stack {
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'BastionHostSecurityGroup',
-      'sg-1245678,
+      'sg-1245678',
       { mutable: false }
     );
 
@@ -198,6 +198,46 @@ class PocRedshiftStack(cdk.Stack):
         )
 ```
 
+## Bastion Host for Aurora Serverless
+
+```typescript
+import * as cdk from '@aws-cdk/core';
+import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
+import { ServerlessCluster } from '@aws-cdk/aws-rds';
+import { BastionHostAuroraServerlessForward } from '@moia-dev/bastion-host-rds-forward';
+
+export class BastionHostPocStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const vpc = Vpc.fromLookup(this, 'MyVpc', {
+      vpcId: 'vpc-0123456789abcd'
+    });
+
+    const securityGroup = SecurityGroup.fromSecurityGroupId(
+      this,
+      'AuroraSecurityGroup',
+      'odsufa5addasdj',
+      { mutable: false }
+    );
+
+    const serverlessCluster = ServerlessCluster.fromServerlessClusterAttributes(
+      this,
+      'Aurora',
+      {
+        clusterIdentifier: 'my-cluster',
+        port: 3306,
+        clusterEndpointAddress: 'my-aurora.cluster-abcdef.eu-central-1.rds.amazonaws.com',
+        securityGroups: [securityGroup]
+      }
+    );
+
+    new BastionHostAuroraServerlessForward(this, 'BastionHost', {
+      vpc, 
+      serverlessCluster,
+    });
+```
+
 ## Deploying the Bastion Host
 
 When you setup the Bastion Host for the Database you want to connect to, you can
@@ -232,7 +272,8 @@ AWS](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manage
 The Session Manager offers a command to forward a specific port. On the Bastion
 Host a HAProxy was installed which forwards the connection on the same
 port as the specified service. Those are by default:
-- RDS: 5432
+- RDS MySQL: 3306
+- RDS PostgreSQL: 5432
 - Redis: 6739
 - Redshift: 5439
 
@@ -253,6 +294,18 @@ automatically after deploying the bastion host. The `portNumber` must be the
 same as the RDS Port.
 
 Now you would be able to connect to the RDS as it would run on localhost:5432.
+
+*Note*
+
+In the example of a MySQL running in Serverless Aurora, we couldn't connect to
+the database using localhost. If you face the same issue, make sure to also try to connect via
+the local IP 127.0.0.1. 
+
+Example with the MySQL CLI:
+
+```sh
+mysql -u <username> -h 127.0.0.1 -p
+```
 
 ## Additional step if you are using IAM Authentication on RDS
 
