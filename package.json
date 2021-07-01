@@ -35,7 +35,7 @@
     "@types/node": "15.0.1",
     "jest": "^26.6.3",
     "jsii": "^1.29.0",
-    "jsii-pacmak": "^1.29.0",
+    "jsii-pacmak": "^1.30.0",
     "jsii-release": "^0.2.30",
     "ts-jest": "^26.5.6",
     "tslint": "^6.1.3",
