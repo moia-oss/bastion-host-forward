@@ -42,7 +42,7 @@
     "typescript": "^4.3.2"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "^1.106.1",
+    "@aws-cdk/aws-ec2": "^1.110.1",
     "@aws-cdk/aws-elasticache": "^1.106.1",
     "@aws-cdk/aws-iam": "^1.106.1",
     "@aws-cdk/aws-rds": "^1.106.1",
@@ -51,7 +51,7 @@
     "constructs": "^3.0.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.106.1",
+    "@aws-cdk/aws-ec2": "^1.110.1",
     "@aws-cdk/aws-elasticache": "^1.106.1",
     "@aws-cdk/aws-iam": "^1.106.1",
     "@aws-cdk/aws-rds": "^1.106.1",
