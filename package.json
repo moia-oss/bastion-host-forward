@@ -47,7 +47,7 @@
     "@aws-cdk/aws-iam": "^1.114.0",
     "@aws-cdk/aws-rds": "^1.114.0",
     "@aws-cdk/aws-redshift": "^1.114.0",
-    "@aws-cdk/core": "^1.114.0",
+    "@aws-cdk/core": "^1.116.0",
     "constructs": "^3.0.3"
   },
   "dependencies": {
@@ -56,7 +56,7 @@
     "@aws-cdk/aws-iam": "^1.114.0",
     "@aws-cdk/aws-rds": "^1.114.0",
     "@aws-cdk/aws-redshift": "^1.114.0",
-    "@aws-cdk/core": "^1.114.0"
+    "@aws-cdk/core": "^1.116.0"
   },
   "jest": {
     "moduleFileExtensions": [
