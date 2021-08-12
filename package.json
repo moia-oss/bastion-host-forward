@@ -1,5 +1,6 @@
 {
   "name": "@moia-oss/bastion-host-forward",
+  "description": "CDK Construct for creating a bastion host to forward a connection to several AWS data services inside a private subnet from your local machine",
   "author": {
     "name": "MOIA GmbH"
   },
@@ -17,7 +18,7 @@
     "aurora serverless"
   ],
   "license": "Apache-2.0",
-  "version": "0.8.3",
+  "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
