@@ -7,6 +7,15 @@
     "type": "git",
     "url": "https://github.com/moia-oss/bastion-host-forward"
   },
+  "keywords": [
+    "cdk",
+    "awscdk",
+    "bastion host",
+    "rds",
+    "elasticache redis",
+    "redshift",
+    "aurora serverless"
+  ],
   "license": "Apache-2.0",
   "version": "0.8.2",
   "main": "lib/index.js",
