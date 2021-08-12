@@ -17,7 +17,7 @@
     "aurora serverless"
   ],
   "license": "Apache-2.0",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
