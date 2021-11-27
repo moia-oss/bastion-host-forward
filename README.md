@@ -293,7 +293,7 @@ But overall it's a much more comfortable experience to connect to the Bastion
 Session Manager Plugin. On Mac OSX you can get it via homebrew for example:
 
 ```
-brew cask install session-manager-plugin
+brew install --cask session-manager-plugin
 ```
 
 For Linux it should also be available in the respective package manager. Also
