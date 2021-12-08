@@ -19,185 +19,213 @@ import * as rds from '@aws-cdk/aws-rds';
 import { BastionHostAuroraServerlessForward } from '../lib/aurora-serverless';
 
 test('Bastion Host created for normal username/password access', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'TestStack');
-    const testVpc = new ec2.Vpc(stack, 'TestVpc');
-    const testAurora = new rds.ServerlessCluster(stack, 'TestAurora', {
-      engine: rds.DatabaseClusterEngine.AURORA,
-      vpc: testVpc,
-    });
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack');
+  const testVpc = new ec2.Vpc(stack, 'TestVpc');
+  const testAurora = new rds.ServerlessCluster(stack, 'TestAurora', {
+    engine: rds.DatabaseClusterEngine.AURORA,
+    vpc: testVpc,
+  });
 
-    // WHEN
-    new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
-      vpc: testVpc,
-      name: 'MyBastion',
-      serverlessCluster: testAurora,
-      clientTimeout: 2,
-    });
+  // WHEN
+  new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    name: 'MyBastion',
+    serverlessCluster: testAurora,
+    clientTimeout: 2,
+  });
 
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EC2::Instance', {
-      UserData: {
-        'Fn::Base64': {
-          'Fn::Join': [
-            '',
-            [
-              `Content-Type: multipart/mixed; boundary=\"//\"\nMIME-Version: 1.0\n--//\nContent-Type: text/cloud-config; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"cloud-config.txt\"\n#cloud-config\ncloud_final_modules:\n- [scripts-user, always]\n--//\nContent-Type: text/x-shellscript; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"userdata.txt\"\n#!/bin/bash\nmount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm\nyum install -y haproxy\necho \"listen database\n  bind 0.0.0.0:${testAurora.clusterEndpoint.port}\n  timeout connect 10s\n  timeout client 2m\n  timeout server 1m\n  mode tcp\n  server service `,
-              {
-                'Fn::GetAtt': [
-                  'TestAurora252434E9',
-                  'Endpoint.Address'
-                ]
-              },
-              `:${testAurora.clusterEndpoint.port}\n\" > /etc/haproxy/haproxy.cfg\nservice haproxy restart\n--//`
-            ]
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EC2::Instance', {
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            'Content-Type: multipart/mixed; boundary=\"//\"\nMIME-Version: 1.0\n--//\nContent-Type: text/cloud-config; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"cloud-config.txt\"\n#cloud-config\ncloud_final_modules:\n- [scripts-user, always]\n--//\nContent-Type: text/x-shellscript; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"userdata.txt\"\n#!/bin/bash\nmount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm\nyum install -y haproxy\necho \"listen database\n  bind 0.0.0.0:',
+            {
+              "Fn::GetAtt": [
+                "TestAurora252434E9",
+                "Endpoint.Port"
+              ]
+            },
+            '\n  timeout connect 10s\n  timeout client 2m\n  timeout server 1m\n  mode tcp\n  server service ',
+            {
+              'Fn::GetAtt': [
+                'TestAurora252434E9',
+                'Endpoint.Address'
+              ]
+            },
+            ':',
+            {
+              "Fn::GetAtt": [
+                "TestAurora252434E9",
+                "Endpoint.Port"
+              ]
+            },
+            '\n\" > /etc/haproxy/haproxy.cfg\nservice haproxy restart\n--//'
           ]
-        },
+        ]
       },
-      Tags: [
-        {
-          Key: 'Name',
-          Value: 'MyBastion'
-        }
-      ],
-    }));
+    },
+    Tags: [
+      {
+        Key: 'Name',
+        Value: 'MyBastion'
+      }
+    ],
+  }));
 });
 
 test('Bastion Host created with extended Role for IAM Connection', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'TestStack');
-    const testVpc = new ec2.Vpc(stack, 'TestVpc');
-    const testAurora = new rds.ServerlessCluster(stack, 'TestAurora', {
-      engine: rds.DatabaseClusterEngine.AURORA,
-      vpc: testVpc
-    });
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack');
+  const testVpc = new ec2.Vpc(stack, 'TestVpc');
+  const testAurora = new rds.ServerlessCluster(stack, 'TestAurora', {
+    engine: rds.DatabaseClusterEngine.AURORA,
+    vpc: testVpc
+  });
 
-    // WHEN
-    new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
-      vpc: testVpc,
-      name: 'MyBastionWithIAMAccess',
-      serverlessCluster: testAurora,
-      iamUser: 'iamuser',
-      resourceIdentifier: 'db-ABCDEFGH',
-    });
+  // WHEN
+  new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    name: 'MyBastionWithIAMAccess',
+    serverlessCluster: testAurora,
+    iamUser: 'iamuser',
+    resourceIdentifier: 'db-ABCDEFGH',
+  });
 
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::EC2::Instance', {
-      UserData: {
-        'Fn::Base64': {
-          'Fn::Join': [
-            '',
-            [
-              `Content-Type: multipart/mixed; boundary=\"//\"\nMIME-Version: 1.0\n--//\nContent-Type: text/cloud-config; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"cloud-config.txt\"\n#cloud-config\ncloud_final_modules:\n- [scripts-user, always]\n--//\nContent-Type: text/x-shellscript; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"userdata.txt\"\n#!/bin/bash\nmount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm\nyum install -y haproxy\necho \"listen database\n  bind 0.0.0.0:${testAurora.clusterEndpoint.port}\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server service `,
-              {
-                'Fn::GetAtt': [
-                  'TestAurora252434E9',
-                  'Endpoint.Address'
-                ]
-              },
-              `:${testAurora.clusterEndpoint.port}\n\" > /etc/haproxy/haproxy.cfg\nservice haproxy restart\n--//`
-            ]
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EC2::Instance', {
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            'Content-Type: multipart/mixed; boundary=\"//\"\nMIME-Version: 1.0\n--//\nContent-Type: text/cloud-config; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"cloud-config.txt\"\n#cloud-config\ncloud_final_modules:\n- [scripts-user, always]\n--//\nContent-Type: text/x-shellscript; charset=\"us-ascii\"\nMIME-Version: 1.0\nContent-Transfer-Encoding: 7bit\nContent-Disposition: attachment; filename=\"userdata.txt\"\n#!/bin/bash\nmount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm\nyum install -y haproxy\necho \"listen database\n  bind 0.0.0.0:',
+            {
+              "Fn::GetAtt": [
+                "TestAurora252434E9",
+                "Endpoint.Port"
+              ]
+            },
+            '\n  timeout connect 10s\n  timeout client 1m\n  timeout server 1m\n  mode tcp\n  server service ',
+            {
+              'Fn::GetAtt': [
+                'TestAurora252434E9',
+                'Endpoint.Address'
+              ]
+            },
+            ':',
+            {
+              "Fn::GetAtt": [
+                "TestAurora252434E9",
+                "Endpoint.Port"
+              ]
+            },
+            '\n\" > /etc/haproxy/haproxy.cfg\nservice haproxy restart\n--//'
           ]
-        },
-      },
-      Tags: [
-        {
-          Key: 'Name',
-          Value: 'MyBastionWithIAMAccess'
-        }
-      ],
-    }));
-    expectCDK(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Action: [
-              'ssmmessages:*',
-              'ssm:UpdateInstanceInformation',
-              'ec2messages:*'
-            ],
-            Effect: 'Allow',
-            Resource: '*'
-          },
-          {
-            Action: [
-              'rds-db:connect',
-              'rds:*'
-            ],
-            Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:aws:rds-db:',
-                    {
-                      'Ref': 'AWS::Region'
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId'
-                    },
-                    ':dbuser:db-ABCDEFGH/iamuser'
-                  ]
-                ]
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition'
-                    },
-                    ':rds:',
-                    {
-                      'Ref': 'AWS::Region'
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId'
-                    },
-                    ':cluster:',
-                    {
-                      'Ref': 'TestAurora252434E9',
-                    }
-                  ]
-                ]
-              }
-            ]
-          }
         ]
+      },
+    },
+    Tags: [
+      {
+        Key: 'Name',
+        Value: 'MyBastionWithIAMAccess'
       }
+    ],
+  }));
+  expectCDK(stack).to(haveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: [
+            'ssmmessages:*',
+            'ssm:UpdateInstanceInformation',
+            'ec2messages:*'
+          ],
+          Effect: 'Allow',
+          Resource: '*'
+        },
+        {
+          Action: [
+            'rds-db:connect',
+            'rds:*'
+          ],
+          Effect: 'Allow',
+          Resource: [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:rds-db:',
+                  {
+                    'Ref': 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId'
+                  },
+                  ':dbuser:db-ABCDEFGH/iamuser'
+                ]
+              ]
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition'
+                  },
+                  ':rds:',
+                  {
+                    'Ref': 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId'
+                  },
+                  ':cluster:',
+                  {
+                    'Ref': 'TestAurora252434E9',
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
   }));
 });
 
 test('Bastion Host with own securityGroup', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'TestStack');
-    const testVpc = new ec2.Vpc(stack, 'TestVpc');
-    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
-      vpc: testVpc,
-      allowAllOutbound: false,
-      description: 'My test securityGroup description',
-      securityGroupName: 'MyTestSecurityGroupName',
-    });
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack');
+  const testVpc = new ec2.Vpc(stack, 'TestVpc');
+  const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+    vpc: testVpc,
+    allowAllOutbound: false,
+    description: 'My test securityGroup description',
+    securityGroupName: 'MyTestSecurityGroupName',
+  });
 
-    const testAurora = new rds.ServerlessCluster(stack, 'TestAurora', {
-      engine: rds.DatabaseClusterEngine.AURORA,
-      vpc: testVpc
-    });
+  const testAurora = new rds.ServerlessCluster(stack, 'TestAurora', {
+    engine: rds.DatabaseClusterEngine.AURORA,
+    vpc: testVpc
+  });
 
-    // WHEN
-    const bastionHost = new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
-      vpc: testVpc,
-      name: 'MyBastion',
-      serverlessCluster: testAurora,
-      securityGroup,
-    });
-    const bastionHostSecurityGroup = bastionHost.securityGroup as ec2.SecurityGroup;
+  // WHEN
+  const bastionHost = new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    name: 'MyBastion',
+    serverlessCluster: testAurora,
+    securityGroup,
+  });
+  const bastionHostSecurityGroup = bastionHost.securityGroup as ec2.SecurityGroup;
 
-    assert.equal(securityGroup.securityGroupName, bastionHostSecurityGroup.securityGroupName);
-    assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
+  assert.equal(securityGroup.securityGroupName, bastionHostSecurityGroup.securityGroupName);
+  assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
 });
