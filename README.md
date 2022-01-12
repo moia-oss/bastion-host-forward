@@ -1,6 +1,7 @@
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmoia-oss%2Fbastion-host-forward%2Fbadge&style=flat)](https://actions-badge.atrox.dev/moia-oss/bastion-host-forward/goto)
 [![npm version](https://badge.fury.io/js/%40moia-oss%2Fbastion-host-forward.svg)](https://badge.fury.io/js/%40moia-oss%2Fbastion-host-forward)
 [![PyPI version](https://badge.fury.io/py/moia-dev.bastion-host-forward.svg)](https://badge.fury.io/py/moia-dev.bastion-host-forward)
+
 # Bastion Host Forward
 
 This is a CDK Library providing custom bastion host constructs for connecting to
@@ -22,7 +23,7 @@ Currently the following AWS Services are supported:
 
 The bastion hosts are extensions of the official `BastionHostLinux` CDK
 construct, which allows connecting to the bastion host and from there connect to
-the data layer. 
+the data layer.
 
 These constructs additionally install and configure
 [HAProxy](https://www.haproxy.org/) to forward the endpoint of the chosen data
@@ -66,6 +67,7 @@ pip install moia-dev.bastion-host-forward
 ```
 
 # Examples
+
 The following section includes some examples in supported languages how the
 Bastion Host can be created for different databases.
 
@@ -164,29 +166,25 @@ export class PocRedshiftStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: 'vpc-12345678'
+      vpcId: 'vpc-12345678',
     });
 
-    const securityGroup = SecurityGroup.fromSecurityGroupId(
-      this,
-      'BastionHostSecurityGroup',
-      'sg-1245678',
-      { mutable: false }
-    );
+    const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'BastionHostSecurityGroup', 'sg-1245678', {
+      mutable: false,
+    });
 
     const redshiftCluster = Cluster.fromClusterAttributes(this, 'RedshiftCluster', {
       clusterName: 'myRedshiftClusterName',
       clusterEndpointAddress: 'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
       clusterEndpointPort: 5439,
-      
     });
 
     new BastionHostRedshiftForward(this, 'BastionHostRedshiftForward', {
       vpc,
       name: 'MyRedshiftBastionHost',
       securityGroup,
-      redshiftCluster
-    })
+      redshiftCluster,
+    });
   }
 }
 ```
@@ -266,7 +264,7 @@ export class BastionHostPocStack extends cdk.Stack {
     );
 
     new BastionHostAuroraServerlessForward(this, 'BastionHost', {
-      vpc, 
+      vpc,
       serverlessCluster,
     });
 ```
@@ -305,6 +303,7 @@ AWS](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manage
 The Session Manager offers a command to forward a specific port. On the Bastion
 Host a HAProxy was installed which forwards the connection on the same
 port as the specified service. Those are by default:
+
 - RDS MySQL: 3306
 - RDS PostgreSQL: 5432
 - Redis: 6739
@@ -328,11 +327,11 @@ same as the RDS Port.
 
 Now you would be able to connect to the RDS as it would run on localhost:5432.
 
-*Note*
+_Note_
 
 In the example of a MySQL running in Serverless Aurora, we couldn't connect to
 the database using localhost. If you face the same issue, make sure to also try to connect via
-the local IP 127.0.0.1. 
+the local IP 127.0.0.1.
 
 Example with the MySQL CLI:
 

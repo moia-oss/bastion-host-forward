@@ -3,7 +3,7 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize 
+      - synchronize
 
 jobs:
   test:
@@ -17,9 +17,11 @@ jobs:
           node-version: 16
       - name: NPM Install
         run: npm ci
+      - name: Format Check
+        run: npm run format:check
       - name: Lint
         run: npm run lint
-      - name: Test
-        run: npm run test
       - name: Build
         run: npm run build
+      - name: Test
+        run: npm run test

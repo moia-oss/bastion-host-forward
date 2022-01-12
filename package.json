@@ -28,7 +28,10 @@
     "release-npm": "jsii-release-npm",
     "release-pypi": "jsii-release-pypi",
     "test": "jest",
-    "lint": "tslint --project tsconfig.json --config tslint.yaml"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./lib/",
+    "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx ./lib/ --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "jsii": {
     "outdir": "dist",
@@ -40,33 +43,25 @@
     }
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.134.0",
+    "@moia-oss/eslint-prettier-typescript-config": "^0.11.3",
     "@types/jest": "^27.0.0",
     "@types/node": "16.11.12",
+    "constructs": "10.0.31",
+    "eslint": "^8.6.0",
     "jest": "^26.6.3",
-    "jsii": "^1.30.0",
-    "jsii-pacmak": "^1.32.0",
+    "jsii": "^1.52.1",
+    "jsii-pacmak": "^1.52.1",
     "jsii-release": "^0.2.30",
+    "prettier": "^2.5.1",
     "ts-jest": "^26.5.6",
     "tslint": "^6.1.3",
     "typescript": "^4.5.2"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "^1.134.0",
-    "@aws-cdk/aws-elasticache": "^1.134.0",
-    "@aws-cdk/aws-iam": "^1.134.0",
-    "@aws-cdk/aws-rds": "^1.134.0",
-    "@aws-cdk/aws-redshift": "^1.134.0",
-    "@aws-cdk/core": "^1.134.0",
-    "constructs": "^3.0.3"
+    "constructs": "^10.0.31"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.134.0",
-    "@aws-cdk/aws-elasticache": "^1.134.0",
-    "@aws-cdk/aws-iam": "^1.134.0",
-    "@aws-cdk/aws-rds": "^1.134.0",
-    "@aws-cdk/aws-redshift": "^1.134.0",
-    "@aws-cdk/core": "^1.134.0"
+    "aws-cdk-lib": "2.6.0"
   },
   "jest": {
     "moduleFileExtensions": [

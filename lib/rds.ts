@@ -11,24 +11,26 @@
    limitations under the License.
 */
 
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as rds from '@aws-cdk/aws-rds';
-import { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
+import { Stack } from 'aws-cdk-lib';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import type { IDatabaseInstance } from 'aws-cdk-lib/aws-rds';
+import type { Construct } from 'constructs';
+
 import { BastionHostForward } from './bastion-host-forward';
+import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
 export interface BastionHostRDSForwardProps extends BastionHostForwardBaseProps {
   /*
    * The RDS instance where the bastion host should be able to connect to
    */
-  readonly rdsInstance: rds.IDatabaseInstance;
+  readonly rdsInstance: IDatabaseInstance;
 
   /*
    * The resource identifier of this.rdsInstance.
    * Can be omitted, when not using IAM Authentication.
    *
    * Is needed for the rds-db:connect permission. This property is currently
-   * not exported by the rds.DatabaseInstance.
+   * not exported by the DatabaseInstance.
    */
   readonly rdsResourceIdentifier?: string;
 
@@ -43,7 +45,7 @@ export interface BastionHostRDSForwardProps extends BastionHostForwardBaseProps 
  * Creates a Bastion Host to forward to an RDS Instance
  */
 export class BastionHostRDSForward extends BastionHostForward {
-  constructor(scope: cdk.Construct, id: string, props: BastionHostRDSForwardProps) {
+  constructor(scope: Construct, id: string, props: BastionHostRDSForwardProps) {
     super(scope, id, {
       vpc: props.vpc,
       name: props.name,
@@ -55,14 +57,14 @@ export class BastionHostRDSForward extends BastionHostForward {
 
     if (props.iamUser !== undefined && props.rdsResourceIdentifier !== undefined) {
       this.bastionHost.instance.addToRolePolicy(
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
+        new PolicyStatement({
+          effect: Effect.ALLOW,
           actions: ['rds-db:connect', 'rds:*'],
           resources: [
             this.genDbUserArnFromRdsArn(props.rdsResourceIdentifier, props.iamUser),
             props.rdsInstance.instanceArn,
-          ]
-        })
+          ],
+        }),
       );
     }
   }
@@ -71,6 +73,6 @@ export class BastionHostRDSForward extends BastionHostForward {
    * @returns the resource ARN for the the rds-db:connect action
    */
   private genDbUserArnFromRdsArn(dbIdentifier: string, dbUser: string): string {
-    return `arn:aws:rds-db:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:dbuser:${dbIdentifier}/${dbUser}`;
+    return `arn:aws:rds-db:${Stack.of(this).region}:${Stack.of(this).account}:dbuser:${dbIdentifier}/${dbUser}`;
   }
 }
