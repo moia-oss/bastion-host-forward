@@ -28,7 +28,7 @@ anymore. This is why we cant offer the `BastionHostRedshiftForward` Construct
 anymore. We would need to accept a CFN L1 Construct instead, but we didn't allow
 this for the `BastionHostRedisForward` as well. Instead we decided to rename the
 `BastionHostRedisForward` to `GenericBastionHostForward`, which needs only the
-endpoint address and the port of the data store to be able to forward connections. 
+endpoint address and the port of the data store to be able to forward connections.
 
 With the new `GenericBastionHostForward` you are still able to forward
 connections to Redis and Redshift and also every other data store in AWS, which
