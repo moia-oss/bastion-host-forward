@@ -18,7 +18,7 @@
     "aurora serverless"
   ],
   "license": "Apache-2.0",
-  "version": "1.0.0-beta.1",
+  "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -60,7 +60,7 @@
   },
   "peerDependencies": {
     "constructs": "^10.0.31",
-    "aws-cdk-lib": "^2.6.0"
+    "aws-cdk-lib": "^2.7.0"
   },
   "dependencies": {},
   "jest": {

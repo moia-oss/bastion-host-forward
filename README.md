@@ -19,6 +19,21 @@ Currently the following AWS Services are supported:
 | Redshift          | `BastionHostRedshiftForward`         |
 | RDS               | `BastionHostRDSForward`              |
 
+# V1 DISCLAIMER
+
+We introduced v1.0.0 recently, which now relies on v2 of CDK. This introced an
+incompability, because they don't offer a L2 Construct for
+[Redshift](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_redshift-readme.html)
+anymore. This is why we cant offer the `BastionHostRedshiftForward` Construct
+anymore. We would need to accept a CFN L1 Construct instead, but we didn't allow
+this for the `BastionHostRedisForward` as well. Instead we decided to rename the
+`BastionHostRedisForward` to `GenericBastionHostForward`, which needs only the
+endpoint address and the port of the data store to be able to forward connections. 
+
+With the new `GenericBastionHostForward` you are still able to forward
+connections to Redis and Redshift and also every other data store in AWS, which
+we don't support specifically so far.
+
 # Technical details
 
 The bastion hosts are extensions of the official `BastionHostLinux` CDK
@@ -134,30 +149,20 @@ that IPs from within the VPC are able to connect to the RDS Database. This
 needs to be set in the RDS's Security Group. Otherwise the Bastion Host can't
 connect to the RDS.
 
-## Bastion Host for Redis in Typescript
-
-The instantiation of a BastionHostRedisForward works very similar to the RDS
-example, except that you pass a CfnCacheCluster to the BastionHost like this:
-
-```typescript
-new BastionHostRedisForward(this, 'RedisBastion', {
-  elasticacheCluster: cluster,
-  vpc: vpc,
-});
-```
-
-## Bastion Host for Redshift
+## Bastion Host for a generic data store on AWS (Redis, Redshift etc.)
 
 ### Typescript
 
-A minimal example for creating the Redshift Forward Construct, which will be used via
-username/password could look like this snippet. It's very similar to the RDS
-version. The only difference is that we need a Redshift Cluster object instead
-of a RDS DatabaseInstance:
+A minimal example for creating the Generic Forward Construct, which will be used
+via username/password could look like this snippet. In this case we forward a
+connection to a RedShift instance, but this can also be a Redis Node or any
+other data store on AWS. Instead of passing the complete L2 construct and
+letting the library extract the necessary properties, the client is passing them
+directly to the construct:
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
-import { BastionHostRedshiftForward } from '@moia-dev/bastion-host-forward';
+import { GenericBastionHostForward } from '@moia-dev/bastion-host-forward';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster } from '@aws-cdk/aws-redshift';
 
@@ -179,11 +184,12 @@ export class PocRedshiftStack extends cdk.Stack {
       clusterEndpointPort: 5439,
     });
 
-    new BastionHostRedshiftForward(this, 'BastionHostRedshiftForward', {
+    new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
       vpc,
-      name: 'MyRedshiftBastionHost',
       securityGroup,
-      redshiftCluster,
+      name: 'MyRedshiftBastionHost',
+      address: redshiftCluster.clusterEndpointAddress,
+      port: redshiftCluster.clusterEndpointPort,
     });
   }
 }
@@ -211,7 +217,7 @@ class PocRedshiftStack(cdk.Stack):
             self,
             "sec_group", "sg-12345678"
         )
-        redshiftCluster = aws_redshift.Cluster.from_cluster_attributes(
+        redshift_cluster = aws_redshift.Cluster.from_cluster_attributes(
             self,
             "cluster",
             cluster_name="myRedshiftClusterName",
@@ -219,12 +225,13 @@ class PocRedshiftStack(cdk.Stack):
             cluster_endpoint_port=5439
         )
 
-        bastion_host_forward.BastionHostRedshiftForward(
+        bastion_host_forward.GenericBastionHostForward(
             self,
             "bastion-host",
-            name="my-vastion-host",
+            name="my-bastion-host",
             security_group=security_group,
-            redshift_cluster=redshiftCluster,
+            address: redshift_cluster.cluster_endpoint_address,
+            port: redshift_cluster.cluster_endpoint_port,
             vpc=vpc
         )
 ```
