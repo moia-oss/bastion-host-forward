@@ -11,23 +11,25 @@
    limitations under the License.
 */
 
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as rds from '@aws-cdk/aws-rds';
+import { Stack, Token } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import type { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
+import type { Construct } from 'constructs';
+
 import { BastionHostForward } from './bastion-host-forward';
-import { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
+import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
 export interface BastionHostAuroraServerlessForwardProps extends BastionHostForwardBaseProps {
   /*
    * The Aurora Serverless Cluster where the bastion host should be able to connect to
    */
-  readonly serverlessCluster: rds.IServerlessCluster;
+  readonly serverlessCluster: IServerlessCluster;
   /*
    * The resource identifier of this.serverlessCluster.
    * Can be omitted, when not using IAM Authentication.
    *
    * Is needed for the rds-db:connect permission. This property is currently
-   * not exported by the rds.ServerlessCluster.
+   * not exported by the ServerlessCluster.
    */
   readonly resourceIdentifier?: string;
 
@@ -42,13 +44,13 @@ export interface BastionHostAuroraServerlessForwardProps extends BastionHostForw
  * Creates a Bastion Host to forward to an Aurora Serverless Cluster
  */
 export class BastionHostAuroraServerlessForward extends BastionHostForward {
-  constructor(scope: cdk.Construct, id: string, props: BastionHostAuroraServerlessForwardProps) {
+  constructor(scope: Construct, id: string, props: BastionHostAuroraServerlessForwardProps) {
     super(scope, id, {
       vpc: props.vpc,
       name: props.name,
       securityGroup: props.securityGroup,
       address: props.serverlessCluster.clusterEndpoint.hostname,
-      port: cdk.Token.asString(props.serverlessCluster.clusterEndpoint.port),
+      port: Token.asString(props.serverlessCluster.clusterEndpoint.port),
       clientTimeout: props.clientTimeout,
     });
 
@@ -60,8 +62,8 @@ export class BastionHostAuroraServerlessForward extends BastionHostForward {
           resources: [
             this.genDbUserArnFromRdsArn(props.resourceIdentifier, props.iamUser),
             props.serverlessCluster.clusterArn,
-          ]
-        })
+          ],
+        }),
       );
     }
   }
@@ -70,6 +72,6 @@ export class BastionHostAuroraServerlessForward extends BastionHostForward {
    * @returns the resource ARN for the the rds-db:connect action
    */
   private genDbUserArnFromRdsArn(dbIdentifier: string, dbUser: string): string {
-    return `arn:aws:rds-db:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:dbuser:${dbIdentifier}/${dbUser}`;
+    return `arn:aws:rds-db:${Stack.of(this).region}:${Stack.of(this).account}:dbuser:${dbIdentifier}/${dbUser}`;
   }
 }

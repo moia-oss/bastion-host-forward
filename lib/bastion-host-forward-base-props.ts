@@ -11,14 +11,13 @@
    limitations under the License.
 */
 
-import * as ec2 from '@aws-cdk/aws-ec2';
+import type { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 
 export interface BastionHostForwardBaseProps {
-
   /**
    * The Vpc in which to instantiate the Bastion Host
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc: IVpc;
 
   /**
    * The name of the bastionHost instance
@@ -33,12 +32,12 @@ export interface BastionHostForwardBaseProps {
    * @default If none is provided a default security group is attached, which
    * doesn't allow incoming traffic and allows outbound traffic to everywhere
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup;
 
- /**
-  * The HAProxy client timeout in minutes
-  *
-  * @default 1
-  */
+  /**
+   * The HAProxy client timeout in minutes
+   *
+   * @default 1
+   */
   readonly clientTimeout?: number;
 }

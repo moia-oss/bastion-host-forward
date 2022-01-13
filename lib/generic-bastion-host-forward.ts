@@ -11,21 +11,25 @@
    limitations under the License.
 */
 
-import * as cdk from '@aws-cdk/core';
-import { BastionHostForwardProps } from './bastion-host-forward-props';
+import type { Construct } from 'constructs';
+
 import { BastionHostForward } from './bastion-host-forward';
+import type { BastionHostForwardProps } from './bastion-host-forward-props';
 
 /*
- * Creates a Bastion Host to forward to a Redis Cluster
+ * Creates a Bastion Host to forward to a generic Endpoint. It needs the following attributes:
+ * - vpc: The VPC to deploy the bastion host to
+ * - address: The endpoint address of the datastore
+ * - port: The port of the datastore
  */
-export class BastionHostRedisForward extends BastionHostForward {
-  constructor(scope: cdk.Construct, id: string, props: BastionHostForwardProps) {
+export class GenericBastionHostForward extends BastionHostForward {
+  constructor(scope: Construct, id: string, props: BastionHostForwardProps) {
     super(scope, id, {
       vpc: props.vpc,
       name: props.name,
       securityGroup: props.securityGroup,
       address: props.address,
-      port: props.port,
+      port: String(props.port),
       clientTimeout: props.clientTimeout,
     });
   }

@@ -1,4 +1,4 @@
-import { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
+import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
 export interface BastionHostForwardProps extends BastionHostForwardBaseProps {
   /**
@@ -11,4 +11,3 @@ export interface BastionHostForwardProps extends BastionHostForwardBaseProps {
    */
   readonly port: string;
 }
-

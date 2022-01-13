@@ -1,6 +1,7 @@
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmoia-oss%2Fbastion-host-forward%2Fbadge&style=flat)](https://actions-badge.atrox.dev/moia-oss/bastion-host-forward/goto)
 [![npm version](https://badge.fury.io/js/%40moia-oss%2Fbastion-host-forward.svg)](https://badge.fury.io/js/%40moia-oss%2Fbastion-host-forward)
 [![PyPI version](https://badge.fury.io/py/moia-dev.bastion-host-forward.svg)](https://badge.fury.io/py/moia-dev.bastion-host-forward)
+
 # Bastion Host Forward
 
 This is a CDK Library providing custom bastion host constructs for connecting to
@@ -18,11 +19,26 @@ Currently the following AWS Services are supported:
 | Redshift          | `BastionHostRedshiftForward`         |
 | RDS               | `BastionHostRDSForward`              |
 
+# V1 DISCLAIMER
+
+We introduced v1.0.0 recently, which now relies on v2 of CDK. This introced an
+incompability, because they don't offer a L2 Construct for
+[Redshift](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_redshift-readme.html)
+anymore. This is why we cant offer the `BastionHostRedshiftForward` Construct
+anymore. We would need to accept a CFN L1 Construct instead, but we didn't allow
+this for the `BastionHostRedisForward` as well. Instead we decided to rename the
+`BastionHostRedisForward` to `GenericBastionHostForward`, which needs only the
+endpoint address and the port of the data store to be able to forward connections.
+
+With the new `GenericBastionHostForward` you are still able to forward
+connections to Redis and Redshift and also every other data store in AWS, which
+we don't support specifically so far.
+
 # Technical details
 
 The bastion hosts are extensions of the official `BastionHostLinux` CDK
 construct, which allows connecting to the bastion host and from there connect to
-the data layer. 
+the data layer.
 
 These constructs additionally install and configure
 [HAProxy](https://www.haproxy.org/) to forward the endpoint of the chosen data
@@ -66,6 +82,7 @@ pip install moia-dev.bastion-host-forward
 ```
 
 # Examples
+
 The following section includes some examples in supported languages how the
 Bastion Host can be created for different databases.
 
@@ -132,30 +149,20 @@ that IPs from within the VPC are able to connect to the RDS Database. This
 needs to be set in the RDS's Security Group. Otherwise the Bastion Host can't
 connect to the RDS.
 
-## Bastion Host for Redis in Typescript
-
-The instantiation of a BastionHostRedisForward works very similar to the RDS
-example, except that you pass a CfnCacheCluster to the BastionHost like this:
-
-```typescript
-new BastionHostRedisForward(this, 'RedisBastion', {
-  elasticacheCluster: cluster,
-  vpc: vpc,
-});
-```
-
-## Bastion Host for Redshift
+## Bastion Host for a generic data store on AWS (Redis, Redshift etc.)
 
 ### Typescript
 
-A minimal example for creating the Redshift Forward Construct, which will be used via
-username/password could look like this snippet. It's very similar to the RDS
-version. The only difference is that we need a Redshift Cluster object instead
-of a RDS DatabaseInstance:
+A minimal example for creating the Generic Forward Construct, which will be used
+via username/password could look like this snippet. In this case we forward a
+connection to a RedShift instance, but this can also be a Redis Node or any
+other data store on AWS. Instead of passing the complete L2 construct and
+letting the library extract the necessary properties, the client is passing them
+directly to the construct:
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
-import { BastionHostRedshiftForward } from '@moia-dev/bastion-host-forward';
+import { GenericBastionHostForward } from '@moia-dev/bastion-host-forward';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster } from '@aws-cdk/aws-redshift';
 
@@ -164,29 +171,26 @@ export class PocRedshiftStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: 'vpc-12345678'
+      vpcId: 'vpc-12345678',
     });
 
-    const securityGroup = SecurityGroup.fromSecurityGroupId(
-      this,
-      'BastionHostSecurityGroup',
-      'sg-1245678',
-      { mutable: false }
-    );
+    const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'BastionHostSecurityGroup', 'sg-1245678', {
+      mutable: false,
+    });
 
     const redshiftCluster = Cluster.fromClusterAttributes(this, 'RedshiftCluster', {
       clusterName: 'myRedshiftClusterName',
       clusterEndpointAddress: 'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
       clusterEndpointPort: 5439,
-      
     });
 
-    new BastionHostRedshiftForward(this, 'BastionHostRedshiftForward', {
+    new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
       vpc,
-      name: 'MyRedshiftBastionHost',
       securityGroup,
-      redshiftCluster
-    })
+      name: 'MyRedshiftBastionHost',
+      address: redshiftCluster.clusterEndpointAddress,
+      port: redshiftCluster.clusterEndpointPort,
+    });
   }
 }
 ```
@@ -213,7 +217,7 @@ class PocRedshiftStack(cdk.Stack):
             self,
             "sec_group", "sg-12345678"
         )
-        redshiftCluster = aws_redshift.Cluster.from_cluster_attributes(
+        redshift_cluster = aws_redshift.Cluster.from_cluster_attributes(
             self,
             "cluster",
             cluster_name="myRedshiftClusterName",
@@ -221,12 +225,13 @@ class PocRedshiftStack(cdk.Stack):
             cluster_endpoint_port=5439
         )
 
-        bastion_host_forward.BastionHostRedshiftForward(
+        bastion_host_forward.GenericBastionHostForward(
             self,
             "bastion-host",
-            name="my-vastion-host",
+            name="my-bastion-host",
             security_group=security_group,
-            redshift_cluster=redshiftCluster,
+            address: redshift_cluster.cluster_endpoint_address,
+            port: redshift_cluster.cluster_endpoint_port,
             vpc=vpc
         )
 ```
@@ -266,7 +271,7 @@ export class BastionHostPocStack extends cdk.Stack {
     );
 
     new BastionHostAuroraServerlessForward(this, 'BastionHost', {
-      vpc, 
+      vpc,
       serverlessCluster,
     });
 ```
@@ -305,6 +310,7 @@ AWS](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manage
 The Session Manager offers a command to forward a specific port. On the Bastion
 Host a HAProxy was installed which forwards the connection on the same
 port as the specified service. Those are by default:
+
 - RDS MySQL: 3306
 - RDS PostgreSQL: 5432
 - Redis: 6739
@@ -328,11 +334,11 @@ same as the RDS Port.
 
 Now you would be able to connect to the RDS as it would run on localhost:5432.
 
-*Note*
+_Note_
 
 In the example of a MySQL running in Serverless Aurora, we couldn't connect to
 the database using localhost. If you face the same issue, make sure to also try to connect via
-the local IP 127.0.0.1. 
+the local IP 127.0.0.1.
 
 Example with the MySQL CLI:
 
