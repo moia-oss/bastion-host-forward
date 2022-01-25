@@ -95,7 +95,7 @@ username/password could look like this snippet:
 import * as cdk from '@aws-cdk/core';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import { DatabaseInstance } from '@aws-cdk/aws-rds';
-import { BastionHostRDSForward } from '@moia-dev/bastion-host-rds-forward';
+import { BastionHostRDSForward } from '@moia-oss/bastion-host-forward';
 
 export class BastionHostPocStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
