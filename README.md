@@ -162,7 +162,7 @@ directly to the construct:
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
-import { GenericBastionHostForward } from '@moia-dev/bastion-host-forward';
+import { GenericBastionHostForward } from '@moia-oss/bastion-host-forward';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import { Cluster } from '@aws-cdk/aws-redshift';
 
@@ -242,7 +242,7 @@ class PocRedshiftStack(cdk.Stack):
 import * as cdk from '@aws-cdk/core';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import { ServerlessCluster } from '@aws-cdk/aws-rds';
-import { BastionHostAuroraServerlessForward } from '@moia-dev/bastion-host-rds-forward';
+import { BastionHostAuroraServerlessForward } from '@moia-oss/bastion-host-rds-forward';
 
 export class BastionHostPocStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
