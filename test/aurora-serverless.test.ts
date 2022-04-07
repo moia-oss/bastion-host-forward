@@ -33,6 +33,7 @@ test('Bastion Host created for normal username/password access', () => {
     name: 'MyBastion',
     serverlessCluster: testAurora,
     clientTimeout: 2,
+    serverTimeout: 7,
   });
 
   const template = Template.fromStack(stack);
@@ -48,7 +49,7 @@ test('Bastion Host created for normal username/password access', () => {
             {
               'Fn::GetAtt': ['TestAurora252434E9', 'Endpoint.Port'],
             },
-            '\n  timeout connect 10s\n  timeout client 2m\n  timeout server 1m\n  mode tcp\n  server service ',
+            '\n  timeout connect 10s\n  timeout client 2m\n  timeout server 7m\n  mode tcp\n  server service ',
             {
               'Fn::GetAtt': ['TestAurora252434E9', 'Endpoint.Address'],
             },

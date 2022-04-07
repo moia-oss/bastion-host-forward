@@ -34,6 +34,7 @@ test('Bastion Host created for normal username/password access', () => {
     name: 'MyBastion',
     rdsInstance: testRds,
     clientTimeout: 2,
+    serverTimeout: 4,
   });
 
   const template = Template.fromStack(stack);
@@ -49,7 +50,7 @@ test('Bastion Host created for normal username/password access', () => {
             {
               'Fn::GetAtt': ['TestRDSDF309CB7', 'Endpoint.Port'],
             },
-            '\n  timeout connect 10s\n  timeout client 2m\n  timeout server 1m\n  mode tcp\n  server service ',
+            '\n  timeout connect 10s\n  timeout client 2m\n  timeout server 4m\n  mode tcp\n  server service ',
             {
               'Fn::GetAtt': ['TestRDSDF309CB7', 'Endpoint.Address'],
             },
