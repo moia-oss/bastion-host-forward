@@ -53,6 +53,7 @@ export class BastionHostRDSForward extends BastionHostForward {
       address: props.rdsInstance.dbInstanceEndpointAddress,
       port: props.rdsInstance.dbInstanceEndpointPort,
       clientTimeout: props.clientTimeout,
+      serverTimeout: props.serverTimeout,
     });
 
     if (props.iamUser !== undefined && props.rdsResourceIdentifier !== undefined) {

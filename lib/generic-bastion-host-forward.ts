@@ -31,6 +31,7 @@ export class GenericBastionHostForward extends BastionHostForward {
       address: props.address,
       port: String(props.port),
       clientTimeout: props.clientTimeout,
+      serverTimeout: props.serverTimeout,
     });
   }
 }

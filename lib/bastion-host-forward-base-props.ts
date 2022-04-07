@@ -40,4 +40,11 @@ export interface BastionHostForwardBaseProps {
    * @default 1
    */
   readonly clientTimeout?: number;
+
+  /**
+   * The HAProxy server timeout in minutes
+   *
+   * @default 1
+   */
+  readonly serverTimeout?: number;
 }

@@ -52,6 +52,7 @@ export class BastionHostAuroraServerlessForward extends BastionHostForward {
       address: props.serverlessCluster.clusterEndpoint.hostname,
       port: Token.asString(props.serverlessCluster.clusterEndpoint.port),
       clientTimeout: props.clientTimeout,
+      serverTimeout: props.serverTimeout,
     });
 
     if (props.iamUser !== undefined && props.resourceIdentifier !== undefined) {
