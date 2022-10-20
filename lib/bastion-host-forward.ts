@@ -40,6 +40,7 @@ export class BastionHostForward extends cdk.Construct {
     });
 
     this.bastionHost = new ec2.BastionHostLinux(this, 'BastionHost', {
+      requireImdsv2: true,
       instanceName: props.name || 'BastionHost',
       vpc: props.vpc,
       securityGroup: this.securityGroup,
