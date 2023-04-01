@@ -50,7 +50,7 @@
     "aws-cdk-lib": "2.63.0",
     "eslint": "^8.6.0",
     "jest": "^27.4.7",
-    "jsii": "^1.52.1",
+    "jsii": "^5.0.2",
     "jsii-pacmak": "^1.52.1",
     "jsii-release": "^0.2.309",
     "prettier": "^2.6.1",
