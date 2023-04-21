@@ -12,7 +12,7 @@
 */
 
 import { Fn } from 'aws-cdk-lib';
-import { BastionHostLinux, SecurityGroup, UserData } from 'aws-cdk-lib/aws-ec2';
+import { BastionHostLinux, MachineImage, SecurityGroup, UserData } from 'aws-cdk-lib/aws-ec2';
 import type { CfnInstance, ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
@@ -98,6 +98,7 @@ export class BastionHostForward extends Construct {
     this.bastionHost = new BastionHostLinux(this, 'BastionHost', {
       requireImdsv2: true,
       instanceName: props.name ?? 'BastionHost',
+      machineImage: MachineImage.latestAmazonLinux2(),
       vpc: props.vpc,
       securityGroup: this.securityGroup,
     });
