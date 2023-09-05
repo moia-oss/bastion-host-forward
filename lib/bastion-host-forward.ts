@@ -82,6 +82,11 @@ export class BastionHostForward extends Construct {
   public securityGroup?: ISecurityGroup;
 
   /**
+   * @returns the private ip address of the bastion host
+   */
+  public instancePrivateIp?: string;
+
+  /**
    * @returns The BastionHost Instance
    */
   protected readonly bastionHost: BastionHostLinux;
@@ -113,5 +118,6 @@ export class BastionHostForward extends Construct {
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 
     this.instanceId = this.bastionHost.instance.instanceId;
+    this.instancePrivateIp = this.bastionHost.instance.instancePrivateIp;
   }
 }
