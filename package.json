@@ -46,7 +46,7 @@
     "@moia-oss/eslint-prettier-typescript-config": "^0.11.3",
     "@types/jest": "^27.4.1",
     "@types/node": "20.8.10",
-    "constructs": "10.2.70",
+    "constructs": "10.3.0",
     "aws-cdk-lib": "2.99.1",
     "eslint": "^8.6.0",
     "jest": "^27.4.7",
