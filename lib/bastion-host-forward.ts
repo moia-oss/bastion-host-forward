@@ -103,7 +103,7 @@ export class BastionHostForward extends Construct {
     this.bastionHost = new BastionHostLinux(this, 'BastionHost', {
       requireImdsv2: true,
       instanceName: props.name ?? 'BastionHost',
-      machineImage: MachineImage.latestAmazonLinux2(),
+      machineImage: MachineImage.latestAmazonLinux2023(),
       vpc: props.vpc,
       securityGroup: this.securityGroup,
     });
