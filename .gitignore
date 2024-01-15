@@ -8,6 +8,7 @@ tags
 dist/
 test/__snapshots__/
 # CDK asset staging directory
+tsconfig.tsbuildinfo
 .cdk.staging
 cdk.out
 .idea/
