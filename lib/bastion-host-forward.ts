@@ -12,7 +12,18 @@
 */
 
 import { Fn } from 'aws-cdk-lib';
-import { BastionHostLinux, MachineImage, SecurityGroup, UserData } from 'aws-cdk-lib/aws-ec2';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxGeneration,
+  AmazonLinuxImage,
+  BastionHostLinux,
+  BlockDeviceVolume,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  SecurityGroup,
+  UserData,
+} from 'aws-cdk-lib/aws-ec2';
 import type { CfnInstance, ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
@@ -62,7 +73,7 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 #!/bin/bash
 mount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc
-yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
 yum install -y haproxy
 echo "${generateHaProxyBaseConfig(config)}" > /etc/haproxy/haproxy.cfg
 service haproxy restart
@@ -103,7 +114,19 @@ export class BastionHostForward extends Construct {
     this.bastionHost = new BastionHostLinux(this, 'BastionHost', {
       requireImdsv2: true,
       instanceName: props.name ?? 'BastionHost',
-      machineImage: MachineImage.latestAmazonLinux2(),
+      machineImage: new AmazonLinuxImage({
+        cpuType: AmazonLinuxCpuType.ARM_64,
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
+      }),
+      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
+      blockDevices: [
+        {
+          deviceName: '/dev/xvda',
+          volume: BlockDeviceVolume.ebs(10, {
+            encrypted: true,
+          }),
+        },
+      ],
       vpc: props.vpc,
       securityGroup: this.securityGroup,
     });
