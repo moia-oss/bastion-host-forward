@@ -11,7 +11,7 @@
    limitations under the License.
 */
 
-import { Fn} from 'aws-cdk-lib';
+import { Fn } from 'aws-cdk-lib';
 import {
   AmazonLinuxCpuType,
   AmazonLinuxGeneration,
