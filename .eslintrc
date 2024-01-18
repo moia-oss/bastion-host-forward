@@ -8,6 +8,7 @@
   },
   "rules": {
     "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
-    "@typescript-eslint/consistent-type-assertions": [2, { "assertionStyle": "as" }]
+    "@typescript-eslint/consistent-type-assertions": [2, { "assertionStyle": "as" }],
+    "no-new": 0
   }
 }
