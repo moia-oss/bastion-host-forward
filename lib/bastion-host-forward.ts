@@ -25,11 +25,11 @@ import {
   UserData,
 } from 'aws-cdk-lib/aws-ec2';
 import type { CfnInstance, ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 import type { BastionHostForwardProps } from './bastion-host-forward-props';
 import { BastionHostPatchManager } from './bastion-host-patch-manager';
-import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 
 interface HaProxyConfig {
   address: string;
