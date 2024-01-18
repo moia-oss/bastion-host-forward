@@ -33,7 +33,7 @@ export class BastionHostPatchManager extends Construct {
       allowUnassociatedTargets: false,
       cutoff: 0,
       duration: 2,
-      schedule: 'cron(40 9 * * ? *)', // TODO: put this to sunday only
+      schedule: 'cron(0 3 * * SUN *)',
     });
 
     const maintenanceTarget = new CfnMaintenanceWindowTarget(this, 'MaintenanceWindowTarget', {
