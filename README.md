@@ -19,6 +19,22 @@ Currently the following AWS Services are supported:
 | Redshift          | `BastionHostRedshiftForward`         |
 | RDS               | `BastionHostRDSForward`              |
 
+# V3 DISCLAIMER
+
+With version 3 a patch manager component is included so that the bastion host instance is provided with security updates on a regular basis. These happen in a maintenance window every sunday at 3am (timezone where it's deployed). To disable the patching, you need to provide the attribute `shouldPatch: false`.
+
+Example:
+
+```typescript
+new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
+  vpc,
+  securityGroup,
+  address,
+  port,
+  shouldPatch: false,
+});
+```
+
 # V1 DISCLAIMER
 
 We introduced v1.0.0 recently, which now relies on v2 of CDK. This introced an

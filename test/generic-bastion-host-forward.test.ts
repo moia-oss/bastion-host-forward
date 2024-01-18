@@ -1,5 +1,5 @@
 /*
-   Copyright 2020 MOIA GmbH
+   Copyright 2024 MOIA GmbH
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -45,6 +45,37 @@ test('Bastion Host created for normal access', () => {
         Value: 'MyRedisBastion',
       },
     ],
+  });
+
+  template.hasResource('AWS::SSM::MaintenanceWindow', {});
+  template.hasResourceProperties('AWS::SSM::MaintenanceWindowTarget', {
+    Targets: [
+      {
+        Key: 'InstanceIds',
+        Values: [
+          {
+            Ref: 'MyTestConstructBastionHost55102049',
+          },
+        ],
+      },
+    ],
+    WindowId: {
+      Ref: 'MyTestConstructBastionHostPatchManagerMaintenanceWindow4F21EBB0',
+    },
+  });
+
+  template.hasResourceProperties('AWS::SSM::MaintenanceWindowTask', {
+    Targets: [
+      {
+        Key: 'WindowTargetIds',
+        Values: [
+          {
+            Ref: 'MyTestConstructBastionHostPatchManagerMaintenanceWindowTarget1C708788',
+          },
+        ],
+      },
+    ],
+    TaskArn: 'AWS-RunPatchBaseline',
   });
 });
 
@@ -98,4 +129,24 @@ test('Bastion Host has encrypted EBS', () => {
       },
     ],
   });
+});
+
+test('Bastion Host created without patch manager', () => {
+  const app = new App();
+  const stack = new Stack(app, 'TestStack');
+  const testVpc = new Vpc(stack, 'TestVpc');
+  // WHEN
+  new GenericBastionHostForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    address: '127.0.0.1',
+    port: '6379',
+    shouldPatch: false,
+  });
+
+  const template = Template.fromStack(stack);
+
+  // THEN
+  template.resourceCountIs('AWS::SSM::MaintenanceWindow', 0);
+  template.resourceCountIs('AWS::SSM::MaintenanceWindowTarget', 0);
+  template.resourceCountIs('AWS::SSM::MaintenanceWindowTask', 0);
 });

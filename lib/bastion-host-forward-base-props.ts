@@ -1,5 +1,5 @@
 /*
-   Copyright 2020 MOIA GmbH
+   Copyright 2024 MOIA GmbH
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -47,4 +47,11 @@ export interface BastionHostForwardBaseProps {
    * @default 1
    */
   readonly serverTimeout?: number;
+
+  /**
+   * Whether patching should be enabled for the bastion-host-forward instance
+   *
+   * @default true
+   */
+  readonly shouldPatch?: boolean;
 }

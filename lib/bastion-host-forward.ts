@@ -1,5 +1,5 @@
 /*
-   Copyright 2020 MOIA GmbH
+   Copyright 2024 MOIA GmbH
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -28,6 +28,8 @@ import type { CfnInstance, ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 import type { BastionHostForwardProps } from './bastion-host-forward-props';
+import { BastionHostPatchManager } from './bastion-host-patch-manager';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 
 interface HaProxyConfig {
   address: string;
@@ -111,9 +113,10 @@ export class BastionHostForward extends Construct {
         allowAllOutbound: true,
       });
 
+    const instanceName = props.name ?? 'BastionHost';
     this.bastionHost = new BastionHostLinux(this, 'BastionHost', {
       requireImdsv2: true,
-      instanceName: props.name ?? 'BastionHost',
+      instanceName,
       machineImage: new AmazonLinuxImage({
         cpuType: AmazonLinuxCpuType.ARM_64,
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
@@ -139,6 +142,16 @@ export class BastionHostForward extends Construct {
       serverTimeout: props.serverTimeout ?? 1,
     });
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
+
+    if (props.shouldPatch === undefined || props.shouldPatch) {
+      this.bastionHost.instance.role.addManagedPolicy(
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'),
+      );
+      new BastionHostPatchManager(this, 'BastionHostPatchManager', {
+        instanceName,
+        instanceId: this.bastionHost.instance.instanceId,
+      });
+    }
 
     this.instanceId = this.bastionHost.instance.instanceId;
     this.instancePrivateIp = this.bastionHost.instance.instancePrivateIp;
