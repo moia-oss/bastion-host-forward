@@ -120,6 +120,7 @@ export class BastionHostForward extends Construct {
       machineImage: new AmazonLinuxImage({
         cpuType: AmazonLinuxCpuType.ARM_64,
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
+        cachedInContext: props.cachedInContext,
       }),
       instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
       blockDevices: [
