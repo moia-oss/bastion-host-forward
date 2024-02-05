@@ -54,6 +54,7 @@ export class BastionHostAuroraServerlessForward extends BastionHostForward {
       clientTimeout: props.clientTimeout,
       serverTimeout: props.serverTimeout,
       shouldPatch: props.shouldPatch,
+      cachedInContext: props.cachedInContext,
     });
 
     if (props.iamUser !== undefined && props.resourceIdentifier !== undefined) {
