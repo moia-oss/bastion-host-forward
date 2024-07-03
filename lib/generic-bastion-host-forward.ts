@@ -34,6 +34,7 @@ export class GenericBastionHostForward extends BastionHostForward {
       serverTimeout: props.serverTimeout,
       shouldPatch: props.shouldPatch,
       cachedInContext: props.cachedInContext,
+      instanceType: props.instanceType,
     });
   }
 }

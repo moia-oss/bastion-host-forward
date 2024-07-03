@@ -122,7 +122,7 @@ export class BastionHostForward extends Construct {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
         cachedInContext: props.cachedInContext,
       }),
-      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
+      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
       blockDevices: [
         {
           deviceName: '/dev/xvda',
