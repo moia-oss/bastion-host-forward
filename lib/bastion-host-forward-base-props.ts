@@ -11,7 +11,7 @@
    limitations under the License.
 */
 
-import type { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { InstanceType, ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 
 export interface BastionHostForwardBaseProps {
   /**
@@ -75,4 +75,10 @@ export interface BastionHostForwardBaseProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * Type of instance to launch
+   * @default 't4g.nano'
+   */
+  readonly instanceType?: InstanceType;
 }

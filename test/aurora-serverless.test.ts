@@ -14,7 +14,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { strict as assert } from 'assert';
 import { App, Stack } from 'aws-cdk-lib';
-import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { DatabaseClusterEngine, ServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { BastionHostAuroraServerlessForward } from '../lib/aurora-serverless';
 
@@ -207,4 +207,29 @@ test('Bastion Host with own securityGroup', () => {
 
   assert.equal(securityGroup.securityGroupId, bastionHostSecurityGroup.securityGroupId);
   assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
+});
+
+test('Bastion Host with different instanceType', () => {
+  const app = new App();
+  const stack = new Stack(app, 'TestStack');
+  const testVpc = new Vpc(stack, 'TestVpc');
+  const testAurora = new ServerlessCluster(stack, 'TestAurora', {
+    engine: DatabaseClusterEngine.AURORA,
+    vpc: testVpc,
+  });
+
+  // WHEN
+  new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    name: 'MyBastion',
+    serverlessCluster: testAurora,
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MEDIUM),
+  });
+
+  const template = Template.fromStack(stack);
+
+  // THEN
+  template.hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't3.medium',
+  });
 });
