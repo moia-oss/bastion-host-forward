@@ -45,7 +45,7 @@
   "devDependencies": {
     "@moia-oss/eslint-prettier-typescript-config": "^0.11.3",
     "@types/jest": "^27.4.1",
-    "@types/node": "22.7.4",
+    "@types/node": "22.8.6",
     "constructs": "10.4.2",
     "aws-cdk-lib": "2.165.0",
     "eslint": "^8.6.0",
