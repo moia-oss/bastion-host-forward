@@ -48,7 +48,7 @@
     "@types/node": "22.10.3",
     "constructs": "10.4.2",
     "aws-cdk-lib": "2.177.0",
-    "eslint": "^8.6.0",
+    "eslint": "^9.19.0",
     "jest": "^27.4.7",
     "jsii": "^5.0.3",
     "jsii-pacmak": "^1.52.1",
