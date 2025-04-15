@@ -19,7 +19,8 @@ import type { Construct } from 'constructs';
 import { BastionHostForward } from './bastion-host-forward';
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
-export interface BastionHostAuroraServerlessForwardProps extends BastionHostForwardBaseProps {
+export interface BastionHostAuroraServerlessForwardProps
+  extends BastionHostForwardBaseProps {
   /*
    * The Aurora Serverless Cluster where the bastion host should be able to connect to
    */
@@ -44,7 +45,11 @@ export interface BastionHostAuroraServerlessForwardProps extends BastionHostForw
  * Creates a Bastion Host to forward to an Aurora Serverless Cluster
  */
 export class BastionHostAuroraServerlessForward extends BastionHostForward {
-  constructor(scope: Construct, id: string, props: BastionHostAuroraServerlessForwardProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: BastionHostAuroraServerlessForwardProps,
+  ) {
     super(scope, id, {
       vpc: props.vpc,
       name: props.name,
@@ -64,7 +69,10 @@ export class BastionHostAuroraServerlessForward extends BastionHostForward {
           effect: iam.Effect.ALLOW,
           actions: ['rds-db:connect', 'rds:*'],
           resources: [
-            this.genDbUserArnFromRdsArn(props.resourceIdentifier, props.iamUser),
+            this.genDbUserArnFromRdsArn(
+              props.resourceIdentifier,
+              props.iamUser,
+            ),
             props.serverlessCluster.clusterArn,
           ],
         }),

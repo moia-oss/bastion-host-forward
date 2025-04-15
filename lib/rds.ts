@@ -19,7 +19,8 @@ import type { Construct } from 'constructs';
 import { BastionHostForward } from './bastion-host-forward';
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
-export interface BastionHostRDSForwardProps extends BastionHostForwardBaseProps {
+export interface BastionHostRDSForwardProps
+  extends BastionHostForwardBaseProps {
   /*
    * The RDS instance where the bastion host should be able to connect to
    */
@@ -58,13 +59,19 @@ export class BastionHostRDSForward extends BastionHostForward {
       cachedInContext: props.cachedInContext,
     });
 
-    if (props.iamUser !== undefined && props.rdsResourceIdentifier !== undefined) {
+    if (
+      props.iamUser !== undefined &&
+      props.rdsResourceIdentifier !== undefined
+    ) {
       this.bastionHost.instance.addToRolePolicy(
         new PolicyStatement({
           effect: Effect.ALLOW,
           actions: ['rds-db:connect', 'rds:*'],
           resources: [
-            this.genDbUserArnFromRdsArn(props.rdsResourceIdentifier, props.iamUser),
+            this.genDbUserArnFromRdsArn(
+              props.rdsResourceIdentifier,
+              props.iamUser,
+            ),
             props.rdsInstance.instanceArn,
           ],
         }),

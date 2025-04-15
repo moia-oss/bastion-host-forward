@@ -15,7 +15,14 @@ rules:
   object-literal-sort-keys: false
   trailing-comma: false
   no-unused-expression: [true, 'allow-new']
-  variable-name: [true, 'ban-keywords', 'check-format', 'allow-leading-underscore', 'allow-pascal-case']
+  variable-name:
+    [
+      true,
+      'ban-keywords',
+      'check-format',
+      'allow-leading-underscore',
+      'allow-pascal-case',
+    ]
   no-floating-promises: ['Promise']
   no-empty-interface: false
   no-duplicate-imports: error

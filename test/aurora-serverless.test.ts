@@ -14,7 +14,13 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { strict as assert } from 'assert';
 import { App, Stack } from 'aws-cdk-lib';
-import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  SecurityGroup,
+  Vpc,
+} from 'aws-cdk-lib/aws-ec2';
 import { DatabaseClusterEngine, ServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { BastionHostAuroraServerlessForward } from '../lib/aurora-serverless';
 
@@ -126,7 +132,11 @@ test('Bastion Host created with extended Role for IAM Connection', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Action: ['ssmmessages:*', 'ssm:UpdateInstanceInformation', 'ec2messages:*'],
+          Action: [
+            'ssmmessages:*',
+            'ssm:UpdateInstanceInformation',
+            'ec2messages:*',
+          ],
           Effect: 'Allow',
           Resource: '*',
         },
@@ -197,16 +207,26 @@ test('Bastion Host with own securityGroup', () => {
   });
 
   // WHEN
-  const bastionHost = new BastionHostAuroraServerlessForward(stack, 'MyTestConstruct', {
-    vpc: testVpc,
-    name: 'MyBastion',
-    serverlessCluster: testAurora,
-    securityGroup,
-  });
+  const bastionHost = new BastionHostAuroraServerlessForward(
+    stack,
+    'MyTestConstruct',
+    {
+      vpc: testVpc,
+      name: 'MyBastion',
+      serverlessCluster: testAurora,
+      securityGroup,
+    },
+  );
   const bastionHostSecurityGroup = bastionHost.securityGroup as SecurityGroup;
 
-  assert.equal(securityGroup.securityGroupId, bastionHostSecurityGroup.securityGroupId);
-  assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
+  assert.equal(
+    securityGroup.securityGroupId,
+    bastionHostSecurityGroup.securityGroupId,
+  );
+  assert.equal(
+    securityGroup.allowAllOutbound,
+    bastionHostSecurityGroup.allowAllOutbound,
+  );
 });
 
 test('Bastion Host with different instanceType', () => {

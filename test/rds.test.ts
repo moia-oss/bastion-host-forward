@@ -14,7 +14,13 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { strict as assert } from 'assert';
 import { App, Stack } from 'aws-cdk-lib';
-import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  SecurityGroup,
+  Vpc,
+} from 'aws-cdk-lib/aws-ec2';
 import { DatabaseInstance, DatabaseInstanceEngine } from 'aws-cdk-lib/aws-rds';
 import { BastionHostRDSForward } from '../lib/rds';
 
@@ -128,7 +134,11 @@ test('Bastion Host created with extended Role for IAM RDS Connection', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Action: ['ssmmessages:*', 'ssm:UpdateInstanceInformation', 'ec2messages:*'],
+          Action: [
+            'ssmmessages:*',
+            'ssm:UpdateInstanceInformation',
+            'ec2messages:*',
+          ],
           Effect: 'Allow',
           Resource: '*',
         },
@@ -208,6 +218,12 @@ test('Bastion Host with own securityGroup', () => {
   });
   const bastionHostSecurityGroup = bastionHost.securityGroup as SecurityGroup;
 
-  assert.equal(securityGroup.securityGroupId, bastionHostSecurityGroup.securityGroupId);
-  assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
+  assert.equal(
+    securityGroup.securityGroupId,
+    bastionHostSecurityGroup.securityGroupId,
+  );
+  assert.equal(
+    securityGroup.allowAllOutbound,
+    bastionHostSecurityGroup.allowAllOutbound,
+  );
 });

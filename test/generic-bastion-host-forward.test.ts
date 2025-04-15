@@ -100,8 +100,14 @@ test('Bastion Host with own securityGroup', () => {
   });
   const bastionHostSecurityGroup = bastionHost.securityGroup as SecurityGroup;
 
-  assert.equal(securityGroup.securityGroupId, bastionHostSecurityGroup.securityGroupId);
-  assert.equal(securityGroup.allowAllOutbound, bastionHostSecurityGroup.allowAllOutbound);
+  assert.equal(
+    securityGroup.securityGroupId,
+    bastionHostSecurityGroup.securityGroupId,
+  );
+  assert.equal(
+    securityGroup.allowAllOutbound,
+    bastionHostSecurityGroup.allowAllOutbound,
+  );
 });
 
 test('Bastion Host has encrypted EBS', () => {
