@@ -11,7 +11,11 @@
    limitations under the License.
 */
 
-import { CfnMaintenanceWindow, CfnMaintenanceWindowTarget, CfnMaintenanceWindowTask } from 'aws-cdk-lib/aws-ssm';
+import {
+  CfnMaintenanceWindow,
+  CfnMaintenanceWindowTarget,
+  CfnMaintenanceWindowTask,
+} from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export interface BastionHostPatchManagerProps {
@@ -26,28 +30,40 @@ export interface BastionHostPatchManagerProps {
 }
 
 export class BastionHostPatchManager extends Construct {
-  public constructor(scope: Construct, id: string, props: BastionHostPatchManagerProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: BastionHostPatchManagerProps,
+  ) {
     super(scope, id);
-    const maintenanceWindow = new CfnMaintenanceWindow(this, 'MaintenanceWindow', {
-      name: `Patch-${props.instanceName}`,
-      allowUnassociatedTargets: false,
-      cutoff: 0,
-      duration: 2,
-      schedule: 'cron(0 3 ? * SUN *)',
-    });
+    const maintenanceWindow = new CfnMaintenanceWindow(
+      this,
+      'MaintenanceWindow',
+      {
+        name: `Patch-${props.instanceName}`,
+        allowUnassociatedTargets: false,
+        cutoff: 0,
+        duration: 2,
+        schedule: 'cron(0 3 ? * SUN *)',
+      },
+    );
 
-    const maintenanceTarget = new CfnMaintenanceWindowTarget(this, 'MaintenanceWindowTarget', {
-      name: `${props.instanceName}`,
-      windowId: maintenanceWindow.ref,
-      ownerInformation: 'Bastion-Host-Forward',
-      resourceType: 'INSTANCE',
-      targets: [
-        {
-          key: 'InstanceIds',
-          values: [props.instanceId],
-        },
-      ],
-    });
+    const maintenanceTarget = new CfnMaintenanceWindowTarget(
+      this,
+      'MaintenanceWindowTarget',
+      {
+        name: `${props.instanceName}`,
+        windowId: maintenanceWindow.ref,
+        ownerInformation: 'Bastion-Host-Forward',
+        resourceType: 'INSTANCE',
+        targets: [
+          {
+            key: 'InstanceIds',
+            values: [props.instanceId],
+          },
+        ],
+      },
+    );
     new CfnMaintenanceWindowTask(this, 'MaintenanceWindowTask', {
       taskArn: 'AWS-RunPatchBaseline',
       priority: 1,

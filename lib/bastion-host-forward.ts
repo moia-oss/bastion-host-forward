@@ -104,7 +104,11 @@ export class BastionHostForward extends Construct {
    */
   protected readonly bastionHost: BastionHostLinux;
 
-  protected constructor(scope: Construct, id: string, props: BastionHostForwardProps) {
+  protected constructor(
+    scope: Construct,
+    id: string,
+    props: BastionHostForwardProps,
+  ) {
     super(scope, id);
     this.securityGroup =
       props.securityGroup ??
@@ -122,7 +126,9 @@ export class BastionHostForward extends Construct {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2023,
         cachedInContext: props.cachedInContext,
       }),
-      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
+      instanceType:
+        props.instanceType ??
+        InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
       blockDevices: [
         {
           deviceName: '/dev/xvda',
@@ -135,7 +141,8 @@ export class BastionHostForward extends Construct {
       securityGroup: this.securityGroup,
     });
 
-    const cfnBastionHost = this.bastionHost.instance.node.defaultChild as CfnInstance;
+    const cfnBastionHost = this.bastionHost.instance.node
+      .defaultChild as CfnInstance;
     const shellCommands = generateEc2UserData({
       address: props.address,
       port: props.port,

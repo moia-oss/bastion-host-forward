@@ -190,15 +190,25 @@ export class PocRedshiftStack extends cdk.Stack {
       vpcId: 'vpc-12345678',
     });
 
-    const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'BastionHostSecurityGroup', 'sg-1245678', {
-      mutable: false,
-    });
+    const securityGroup = SecurityGroup.fromSecurityGroupId(
+      this,
+      'BastionHostSecurityGroup',
+      'sg-1245678',
+      {
+        mutable: false,
+      },
+    );
 
-    const redshiftCluster = Cluster.fromClusterAttributes(this, 'RedshiftCluster', {
-      clusterName: 'myRedshiftClusterName',
-      clusterEndpointAddress: 'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
-      clusterEndpointPort: 5439,
-    });
+    const redshiftCluster = Cluster.fromClusterAttributes(
+      this,
+      'RedshiftCluster',
+      {
+        clusterName: 'myRedshiftClusterName',
+        clusterEndpointAddress:
+          'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
+        clusterEndpointPort: 5439,
+      },
+    );
 
     new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
       vpc,
