@@ -44,8 +44,8 @@ interface HaProxyConfig {
  * Creates a Config entry for HAProxy with the given address and port
  */
 const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string => 
-  configs.map(config => 
-  `listen database
+  configs.map((config, index) => 
+  `listen database${index}
   bind 0.0.0.0:${config.localPort}
   timeout connect 10s
   timeout client ${config.clientTimeout}m
