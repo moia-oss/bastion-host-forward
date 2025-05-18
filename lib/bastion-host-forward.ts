@@ -29,6 +29,7 @@ import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 import type { BastionHostForwardProps } from './bastion-host-forward-props';
+import type { MultidestinationBastionHostForwardProps } from './multidestination-bastion-host-forward-props';
 import { BastionHostPatchManager } from './bastion-host-patch-manager';
 
 interface HaProxyConfig {
@@ -41,14 +42,16 @@ interface HaProxyConfig {
 /*
  * Creates a Config entry for HAProxy with the given address and port
  */
-const generateHaProxyBaseConfig = (config: HaProxyConfig): string =>
+const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string => 
+  configs.map(config => 
   `listen database
   bind 0.0.0.0:${config.port}
   timeout connect 10s
   timeout client ${config.clientTimeout}m
   timeout server ${config.serverTimeout}m
   mode tcp
-  server service ${config.address}:${config.port}\n`;
+  server service ${config.address}:${config.port}\n`)
+  .join('\n');
 
 /*
  * Generates EC2 User Data for Bastion Host Forwarder. This installs HAProxy
@@ -56,7 +59,7 @@ const generateHaProxyBaseConfig = (config: HaProxyConfig): string =>
  * The User Data is written in MIME format to override the User Data
  * application behavior to be applied on every machine restart
  */
-const generateEc2UserData = (config: HaProxyConfig): UserData =>
+const generateEc2UserData = (configs: HaProxyConfig[]): UserData =>
   UserData.custom(
     `Content-Type: multipart/mixed; boundary="//"
 MIME-Version: 1.0
@@ -77,7 +80,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 mount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc
 yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
 yum install -y haproxy
-echo "${generateHaProxyBaseConfig(config)}" > /etc/haproxy/haproxy.cfg
+echo "${generateHaProxyBaseConfig(configs)}" > /etc/haproxy/haproxy.cfg
 service haproxy restart
 --//`,
   );
@@ -107,9 +110,20 @@ export class BastionHostForward extends Construct {
   protected constructor(
     scope: Construct,
     id: string,
-    props: BastionHostForwardProps,
+    props: BastionHostForwardProps | MultidestinationBastionHostForwardProps,
   ) {
     super(scope, id);
+    if (!('destinations' in props)) {
+      const { address, port, ...rest } = props;
+      props = {
+        ...rest,
+        destinations: [{
+          address,
+          port
+        }]
+      };
+    }
+
     this.securityGroup =
       props.securityGroup ??
       new SecurityGroup(this, 'BastionHostSecurityGroup', {
@@ -143,12 +157,12 @@ export class BastionHostForward extends Construct {
 
     const cfnBastionHost = this.bastionHost.instance.node
       .defaultChild as CfnInstance;
-    const shellCommands = generateEc2UserData({
-      address: props.address,
-      port: props.port,
+    const shellCommands = generateEc2UserData(props.destinations.map(destination => ({
+      address: destination.address,
+      port: destination.port,
       clientTimeout: props.clientTimeout ?? 1,
       serverTimeout: props.serverTimeout ?? 1,
-    });
+    })));
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 
     if (props.shouldPatch === undefined || props.shouldPatch) {
