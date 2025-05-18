@@ -34,7 +34,8 @@ import { BastionHostPatchManager } from './bastion-host-patch-manager';
 
 interface HaProxyConfig {
   address: string;
-  port: string;
+  remotePort: string;
+  localPort: string;
   clientTimeout: number;
   serverTimeout: number;
 }
@@ -45,12 +46,12 @@ interface HaProxyConfig {
 const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string => 
   configs.map(config => 
   `listen database
-  bind 0.0.0.0:${config.port}
+  bind 0.0.0.0:${config.localPort}
   timeout connect 10s
   timeout client ${config.clientTimeout}m
   timeout server ${config.serverTimeout}m
   mode tcp
-  server service ${config.address}:${config.port}\n`)
+  server service ${config.address}:${config.remotePort}\n`)
   .join('\n');
 
 /*
@@ -119,7 +120,8 @@ export class BastionHostForward extends Construct {
         ...rest,
         destinations: [{
           address,
-          port
+          remotePort: port,
+          localPort: port,
         }]
       };
     }
@@ -159,7 +161,8 @@ export class BastionHostForward extends Construct {
       .defaultChild as CfnInstance;
     const shellCommands = generateEc2UserData(props.destinations.map(destination => ({
       address: destination.address,
-      port: destination.port,
+      remotePort: destination.remotePort,
+      localPort: destination.localPort ?? destination.remotePort,
       clientTimeout: props.clientTimeout ?? 1,
       serverTimeout: props.serverTimeout ?? 1,
     })));

@@ -10,6 +10,13 @@ export interface MultidestinationBastionHostForwardProps extends BastionHostForw
     /**
      * The port of the service to forward to
      */
-    readonly port: string;
+    readonly remotePort: string;
+
+    /**
+     * The port on the bastion host which will be forwarded to the remote port.
+     * Each destination must have a different local port.
+     * @default - The remote port will be used as the local port
+     */
+    readonly localPort?: string;
   }>
 }
