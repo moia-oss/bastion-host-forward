@@ -23,7 +23,7 @@ import { MultidestinationBastionHostForwardProps } from './multidestination-bast
  * - address: The endpoint address of the datastore
  * - port: The port of the datastore
  */
-export class GenericBastionHostForward extends BastionHostForward {
+export class MultidestinationBastionHostForward extends BastionHostForward {
   constructor(scope: Construct, id: string, props: MultidestinationBastionHostForwardProps) {
     super(scope, id, {
       vpc: props.vpc,
