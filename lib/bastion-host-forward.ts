@@ -128,6 +128,10 @@ export class BastionHostForward extends Construct {
       };
     }
 
+    if (props.endpoints.length === 0) {
+      throw new Error('At least one endpoint must be provided');
+    }
+
     // Check that all local ports are unique
     const ports = new Set(props.endpoints.map(endpoint => endpoint.localPort));
     if (ports.size !== props.endpoints.length) {
