@@ -45,7 +45,9 @@ interface HaProxyConfig {
  */
 const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string => 
   configs.map((config, index) => 
-  `listen database${index}
+    // No index is used if only one config is provided to avoid
+    // causing redeploys when this change is released.
+  `listen database${configs.length === 1 ? '' : index}
   bind 0.0.0.0:${config.localPort}
   timeout connect 10s
   timeout client ${config.clientTimeout}m
