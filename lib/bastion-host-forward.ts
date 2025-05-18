@@ -163,8 +163,8 @@ export class BastionHostForward extends Construct {
       address: destination.address,
       remotePort: destination.remotePort,
       localPort: destination.localPort ?? destination.remotePort,
-      clientTimeout: props.clientTimeout ?? 1,
-      serverTimeout: props.serverTimeout ?? 1,
+      clientTimeout: destination.clientTimeout ?? props.clientTimeout ?? 1,
+      serverTimeout: destination.serverTimeout ?? props.serverTimeout ?? 1,
     })));
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 

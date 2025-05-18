@@ -18,5 +18,19 @@ export interface MultidestinationBastionHostForwardProps extends BastionHostForw
      * @default - The remote port will be used as the local port
      */
     readonly localPort?: string;
+
+    /**
+     * The HAProxy client timeout in minutes for this destination
+     *
+     * @default - The global client timeout will be used
+     */
+    readonly clientTimeout?: number;
+
+    /**
+     * The HAProxy server timeout in minutes for this destination
+     *
+     * @default - The global server timeout will be used
+     */
+    readonly serverTimeout?: number;
   }>
 }
