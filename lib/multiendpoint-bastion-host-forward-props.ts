@@ -1,7 +1,7 @@
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
-export interface MultidestinationBastionHostForwardProps extends BastionHostForwardBaseProps {
-  destinations: Array<{
+export interface MultiendpointBastionHostForwardProps extends BastionHostForwardBaseProps {
+  endpoints: Array<{
     /**
      * The address of the service to forward to
      */
@@ -14,20 +14,20 @@ export interface MultidestinationBastionHostForwardProps extends BastionHostForw
 
     /**
      * The port on the bastion host which will be forwarded to the remote port.
-     * Each destination must have a different local port.
+     * Each endpoint must have a different local port.
      * @default - The remote port will be used as the local port
      */
     readonly localPort?: string;
 
     /**
-     * The HAProxy client timeout in minutes for this destination
+     * The HAProxy client timeout in minutes for this endpoint
      *
      * @default - The global client timeout will be used
      */
     readonly clientTimeout?: number;
 
     /**
-     * The HAProxy server timeout in minutes for this destination
+     * The HAProxy server timeout in minutes for this endpoint
      *
      * @default - The global server timeout will be used
      */

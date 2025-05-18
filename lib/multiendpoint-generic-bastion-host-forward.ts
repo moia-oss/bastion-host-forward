@@ -14,22 +14,22 @@
 import type { Construct } from 'constructs';
 
 import { BastionHostForward } from './bastion-host-forward';
-import { MultidestinationBastionHostForwardProps } from './multidestination-bastion-host-forward-props';
+import { MultiendpointBastionHostForwardProps } from './multiendpoint-bastion-host-forward-props';
 
 /*
  * Creates a Bastion Host to forward to multiple generic Endpoints. It needs the following attributes:
  * - vpc: The VPC to deploy the bastion host to
- * - destinations: An array of objects with the following attributes:
+ * - endpoints: An array of objects with the following attributes:
  * - address: The endpoint address of the datastore
  * - port: The port of the datastore
  */
-export class MultidestinationBastionHostForward extends BastionHostForward {
-  constructor(scope: Construct, id: string, props: MultidestinationBastionHostForwardProps) {
+export class MultiendpointBastionHostForward extends BastionHostForward {
+  constructor(scope: Construct, id: string, props: MultiendpointBastionHostForwardProps) {
     super(scope, id, {
       vpc: props.vpc,
       name: props.name,
       securityGroup: props.securityGroup,
-      destinations: props.destinations,
+      endpoints: props.endpoints,
       clientTimeout: props.clientTimeout,
       serverTimeout: props.serverTimeout,
       shouldPatch: props.shouldPatch,

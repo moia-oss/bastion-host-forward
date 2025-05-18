@@ -29,8 +29,8 @@ import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 import type { BastionHostForwardProps } from './bastion-host-forward-props';
-import type { MultidestinationBastionHostForwardProps } from './multidestination-bastion-host-forward-props';
 import { BastionHostPatchManager } from './bastion-host-patch-manager';
+import { MultiendpointBastionHostForwardProps } from './multiendpoint-bastion-host-forward-props';
 
 interface HaProxyConfig {
   address: string;
@@ -111,14 +111,14 @@ export class BastionHostForward extends Construct {
   protected constructor(
     scope: Construct,
     id: string,
-    props: BastionHostForwardProps | MultidestinationBastionHostForwardProps,
+    props: BastionHostForwardProps | MultiendpointBastionHostForwardProps,
   ) {
     super(scope, id);
-    if (!('destinations' in props)) {
+    if (!('endpoints' in props)) {
       const { address, port, ...rest } = props;
       props = {
         ...rest,
-        destinations: [{
+        endpoints: [{
           address,
           remotePort: port,
           localPort: port,
@@ -127,8 +127,8 @@ export class BastionHostForward extends Construct {
     }
 
     // Check that all local ports are unique
-    const ports = new Set(props.destinations.map(destination => destination.localPort));
-    if (ports.size !== props.destinations.length) {
+    const ports = new Set(props.endpoints.map(endpoint => endpoint.localPort));
+    if (ports.size !== props.endpoints.length) {
       throw new Error('All local ports must be unique');
     }
 
@@ -165,12 +165,12 @@ export class BastionHostForward extends Construct {
 
     const cfnBastionHost = this.bastionHost.instance.node
       .defaultChild as CfnInstance;
-    const shellCommands = generateEc2UserData(props.destinations.map(destination => ({
-      address: destination.address,
-      remotePort: destination.remotePort,
-      localPort: destination.localPort ?? destination.remotePort,
-      clientTimeout: destination.clientTimeout ?? props.clientTimeout ?? 1,
-      serverTimeout: destination.serverTimeout ?? props.serverTimeout ?? 1,
+    const shellCommands = generateEc2UserData(props.endpoints.map(endpoint => ({
+      address: endpoint.address,
+      remotePort: endpoint.remotePort,
+      localPort: endpoint.localPort ?? endpoint.remotePort,
+      clientTimeout: endpoint.clientTimeout ?? props.clientTimeout ?? 1,
+      serverTimeout: endpoint.serverTimeout ?? props.serverTimeout ?? 1,
     })));
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 
