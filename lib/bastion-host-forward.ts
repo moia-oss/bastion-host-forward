@@ -126,6 +126,12 @@ export class BastionHostForward extends Construct {
       };
     }
 
+    // Check that all local ports are unique
+    const ports = new Set(props.destinations.map(destination => destination.localPort));
+    if (ports.size !== props.destinations.length) {
+      throw new Error('All local ports must be unique');
+    }
+
     this.securityGroup =
       props.securityGroup ??
       new SecurityGroup(this, 'BastionHostSecurityGroup', {
