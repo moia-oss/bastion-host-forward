@@ -38,6 +38,19 @@ test('fails if multiple endpoints have the same localPort', () => {
   }).toThrow('All local ports must be unique');
 });
 
+test('fails if endpoints array is empty', () => {
+  const app = new App();
+  const stack = new Stack(app, 'TestStack');
+  const testVpc = new Vpc(stack, 'TestVpc');
+
+  expect(() => {
+    new MultiendpointBastionHostForward(stack, 'MyTestConstruct', {
+      vpc: testVpc,
+      endpoints: [],
+    });
+  }).toThrow('At least one endpoint must be provided');
+});
+
 test('creates Bastion Host for multiple endpoints with overridden local ports', () => {
   const app = new App();
   const stack = new Stack(app, 'TestStack');
