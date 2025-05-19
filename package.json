@@ -28,6 +28,7 @@
     "release-npm": "jsii-release-npm",
     "release-pypi": "jsii-release-pypi",
     "test": "jest",
+    "test:watch": "jest --watchAll",
     "lint": "eslint ./lib/",
     "lint:fix": "eslint ./lib/ --fix",
     "format": "prettier . --write",
