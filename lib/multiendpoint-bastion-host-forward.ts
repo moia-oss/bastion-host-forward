@@ -17,11 +17,12 @@ import { BastionHostForward } from './bastion-host-forward';
 import { MultiendpointBastionHostForwardProps } from './multiendpoint-bastion-host-forward-props';
 
 /*
- * Creates a Bastion Host to forward to multiple generic Endpoints. It needs the following attributes:
+ * Creates a Bastion Host to forward to multiple generic endpoints. It needs
+ * the following attributes:
  * - vpc: The VPC to deploy the bastion host to
  * - endpoints: An array of objects with the following attributes:
- * - address: The endpoint address of the datastore
- * - port: The port of the datastore
+ *   - address: The endpoint address of the datastore
+ *   - remotePort: The port of the datastore
  */
 export class MultiendpointBastionHostForward extends BastionHostForward {
   constructor(

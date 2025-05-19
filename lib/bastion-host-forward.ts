@@ -127,7 +127,6 @@ export class BastionHostForward extends Construct {
           {
             address,
             remotePort: port,
-            localPort: port,
           },
         ],
       };
