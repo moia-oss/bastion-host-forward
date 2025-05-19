@@ -65,12 +65,12 @@ test('creates Bastion Host for multiple endpoints with overridden local ports', 
   // Assert that both local ports are present in the rendered HAProxy configuration
   template.hasResourceProperties('AWS::EC2::Instance', {
     UserData: {
-      'Fn::Base64': Match.stringLikeRegexp('bind 0.0.0.0:15432'),
+      'Fn::Base64': Match.stringLikeRegexp('bind 0\\.0\\.0\\.0:15432'),
     },
   });
   template.hasResourceProperties('AWS::EC2::Instance', {
     UserData: {
-      'Fn::Base64': Match.stringLikeRegexp('bind 0.0.0.0:25432'),
+      'Fn::Base64': Match.stringLikeRegexp('bind 0\\.0\\.0\\.0:25432'),
     },
   });
 });
