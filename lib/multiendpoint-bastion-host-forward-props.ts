@@ -1,7 +1,7 @@
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
 export interface MultiendpointBastionHostForwardProps extends BastionHostForwardBaseProps {
-  endpoints: Array<{
+  readonly endpoints: Array<{
     /**
      * The address of the service to forward to
      */
