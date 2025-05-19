@@ -118,12 +118,16 @@ test('creates Bastion Host for multiple endpoints with individual timeout settin
   // Verify the per-endpoint timeout values are present in the HAProxy config
   template.hasResourceProperties('AWS::EC2::Instance', {
     UserData: {
-      'Fn::Base64': Match.stringLikeRegexp('timeout client 2m\\n  timeout server 4m'),
+      'Fn::Base64': Match.stringLikeRegexp(
+        'timeout client 2m\\n  timeout server 4m',
+      ),
     },
   });
   template.hasResourceProperties('AWS::EC2::Instance', {
     UserData: {
-      'Fn::Base64': Match.stringLikeRegexp('timeout client 3m\\n  timeout server 5m'),
+      'Fn::Base64': Match.stringLikeRegexp(
+        'timeout client 3m\\n  timeout server 5m',
+      ),
     },
   });
 });
