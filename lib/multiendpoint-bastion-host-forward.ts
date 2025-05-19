@@ -24,7 +24,11 @@ import { MultiendpointBastionHostForwardProps } from './multiendpoint-bastion-ho
  * - port: The port of the datastore
  */
 export class MultiendpointBastionHostForward extends BastionHostForward {
-  constructor(scope: Construct, id: string, props: MultiendpointBastionHostForwardProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: MultiendpointBastionHostForwardProps,
+  ) {
     super(scope, id, props);
   }
 }

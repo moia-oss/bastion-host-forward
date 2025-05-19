@@ -43,18 +43,21 @@ interface HaProxyConfig {
 /*
  * Creates a Config entry for HAProxy with the given address and port
  */
-const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string => 
-  configs.map((config, index) => 
-    // No index is used if only one config is provided to avoid
-    // causing redeploys when this change is released.
-  `listen database${configs.length === 1 ? '' : index}
+const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string =>
+  configs
+    .map(
+      (config, index) =>
+        // No index is used if only one config is provided to avoid
+        // causing redeploys when this change is released.
+        `listen database${configs.length === 1 ? '' : index}
   bind 0.0.0.0:${config.localPort}
   timeout connect 10s
   timeout client ${config.clientTimeout}m
   timeout server ${config.serverTimeout}m
   mode tcp
-  server service ${config.address}:${config.remotePort}\n`)
-  .join('\n');
+  server service ${config.address}:${config.remotePort}\n`,
+    )
+    .join('\n');
 
 /*
  * Generates EC2 User Data for Bastion Host Forwarder. This installs HAProxy
@@ -120,11 +123,13 @@ export class BastionHostForward extends Construct {
       const { address, port, ...rest } = props;
       props = {
         ...rest,
-        endpoints: [{
-          address,
-          remotePort: port,
-          localPort: port,
-        }]
+        endpoints: [
+          {
+            address,
+            remotePort: port,
+            localPort: port,
+          },
+        ],
       };
     }
 
@@ -133,7 +138,9 @@ export class BastionHostForward extends Construct {
     }
 
     // Check that all local ports are unique
-    const ports = new Set(props.endpoints.map(endpoint => endpoint.localPort));
+    const ports = new Set(
+      props.endpoints.map((endpoint) => endpoint.localPort),
+    );
     if (ports.size !== props.endpoints.length) {
       throw new Error('All local ports must be unique');
     }
@@ -171,13 +178,15 @@ export class BastionHostForward extends Construct {
 
     const cfnBastionHost = this.bastionHost.instance.node
       .defaultChild as CfnInstance;
-    const shellCommands = generateEc2UserData(props.endpoints.map(endpoint => ({
-      address: endpoint.address,
-      remotePort: endpoint.remotePort,
-      localPort: endpoint.localPort ?? endpoint.remotePort,
-      clientTimeout: endpoint.clientTimeout ?? props.clientTimeout ?? 1,
-      serverTimeout: endpoint.serverTimeout ?? props.serverTimeout ?? 1,
-    })));
+    const shellCommands = generateEc2UserData(
+      props.endpoints.map((endpoint) => ({
+        address: endpoint.address,
+        remotePort: endpoint.remotePort,
+        localPort: endpoint.localPort ?? endpoint.remotePort,
+        clientTimeout: endpoint.clientTimeout ?? props.clientTimeout ?? 1,
+        serverTimeout: endpoint.serverTimeout ?? props.serverTimeout ?? 1,
+      })),
+    );
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 
     if (props.shouldPatch === undefined || props.shouldPatch) {

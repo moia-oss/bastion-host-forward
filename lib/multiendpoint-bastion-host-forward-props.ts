@@ -1,6 +1,7 @@
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
-export interface MultiendpointBastionHostForwardProps extends BastionHostForwardBaseProps {
+export interface MultiendpointBastionHostForwardProps
+  extends BastionHostForwardBaseProps {
   readonly endpoints: Array<{
     /**
      * The address of the service to forward to
@@ -32,5 +33,5 @@ export interface MultiendpointBastionHostForwardProps extends BastionHostForward
      * @default - The global server timeout will be used
      */
     readonly serverTimeout?: number;
-  }>
+  }>;
 }
