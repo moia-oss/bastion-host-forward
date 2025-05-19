@@ -31,7 +31,8 @@
     "lint": "eslint ./lib/",
     "lint:fix": "eslint ./lib/ --fix",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "prepare": "npm run build"
   },
   "jsii": {
     "outdir": "dist",
