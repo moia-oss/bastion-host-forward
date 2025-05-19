@@ -17,3 +17,5 @@ export * from './bastion-host-forward';
 export * from './rds';
 export * from './aurora-serverless';
 export * from './generic-bastion-host-forward';
+export * from './multiendpoint-bastion-host-forward';
+export * from './multiendpoint-bastion-host-forward-props'

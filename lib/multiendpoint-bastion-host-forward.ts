@@ -25,16 +25,6 @@ import { MultiendpointBastionHostForwardProps } from './multiendpoint-bastion-ho
  */
 export class MultiendpointBastionHostForward extends BastionHostForward {
   constructor(scope: Construct, id: string, props: MultiendpointBastionHostForwardProps) {
-    super(scope, id, {
-      vpc: props.vpc,
-      name: props.name,
-      securityGroup: props.securityGroup,
-      endpoints: props.endpoints,
-      clientTimeout: props.clientTimeout,
-      serverTimeout: props.serverTimeout,
-      shouldPatch: props.shouldPatch,
-      cachedInContext: props.cachedInContext,
-      instanceType: props.instanceType,
-    });
+    super(scope, id, props);
   }
 }
