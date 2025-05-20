@@ -181,7 +181,7 @@ other data store on AWS. Instead of passing the complete L2 construct and
 letting the library extract the necessary properties, the client is passing them
 directly to the construct:
 
-**Note:** This example is outdated now that a Redshift L2 construct is not longer
+**Note:** This example is outdated now that a Redshift L2 construct is no longer
 available, but it illustrates the required steps.
 
 ```typescript
@@ -273,7 +273,7 @@ class PocRedshiftStack(cdk.Stack):
             name="my-bastion-host",
             security_group=security_group,
             address=redshift_cluster.cluster_endpoint_address,
-            port: redshift_cluster.cluster_endpoint_port,
+            port=redshift_cluster.cluster_endpoint_port,
             vpc=vpc
         )
 
