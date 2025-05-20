@@ -30,10 +30,12 @@ import { Construct } from 'constructs';
 
 import type { BastionHostForwardProps } from './bastion-host-forward-props';
 import { BastionHostPatchManager } from './bastion-host-patch-manager';
+import { MultiendpointBastionHostForwardProps } from './multiendpoint-bastion-host-forward-props';
 
 interface HaProxyConfig {
   address: string;
-  port: string;
+  remotePort: string;
+  localPort: string;
   clientTimeout: number;
   serverTimeout: number;
 }
@@ -41,14 +43,21 @@ interface HaProxyConfig {
 /*
  * Creates a Config entry for HAProxy with the given address and port
  */
-const generateHaProxyBaseConfig = (config: HaProxyConfig): string =>
-  `listen database
-  bind 0.0.0.0:${config.port}
+const generateHaProxyBaseConfig = (configs: HaProxyConfig[]): string =>
+  configs
+    .map(
+      (config, index) =>
+        // No index is used if only one config is provided to avoid
+        // causing redeploys when this change is released.
+        `listen database${configs.length === 1 ? '' : index}
+  bind 0.0.0.0:${config.localPort}
   timeout connect 10s
   timeout client ${config.clientTimeout}m
   timeout server ${config.serverTimeout}m
   mode tcp
-  server service ${config.address}:${config.port}\n`;
+  server service ${config.address}:${config.remotePort}\n`,
+    )
+    .join('\n');
 
 /*
  * Generates EC2 User Data for Bastion Host Forwarder. This installs HAProxy
@@ -56,7 +65,7 @@ const generateHaProxyBaseConfig = (config: HaProxyConfig): string =>
  * The User Data is written in MIME format to override the User Data
  * application behavior to be applied on every machine restart
  */
-const generateEc2UserData = (config: HaProxyConfig): UserData =>
+const generateEc2UserData = (configs: HaProxyConfig[]): UserData =>
   UserData.custom(
     `Content-Type: multipart/mixed; boundary="//"
 MIME-Version: 1.0
@@ -77,7 +86,7 @@ Content-Disposition: attachment; filename="userdata.txt"
 mount -o remount,rw,nosuid,nodev,noexec,relatime,hidepid=2 /proc
 yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
 yum install -y haproxy
-echo "${generateHaProxyBaseConfig(config)}" > /etc/haproxy/haproxy.cfg
+echo "${generateHaProxyBaseConfig(configs)}" > /etc/haproxy/haproxy.cfg
 service haproxy restart
 --//`,
   );
@@ -107,9 +116,34 @@ export class BastionHostForward extends Construct {
   protected constructor(
     scope: Construct,
     id: string,
-    props: BastionHostForwardProps,
+    props: BastionHostForwardProps | MultiendpointBastionHostForwardProps,
   ) {
     super(scope, id);
+    if (!('endpoints' in props)) {
+      const { address, port, ...rest } = props;
+      props = {
+        ...rest,
+        endpoints: [
+          {
+            address,
+            remotePort: port,
+          },
+        ],
+      };
+    }
+
+    if (props.endpoints.length === 0) {
+      throw new Error('At least one endpoint must be provided');
+    }
+
+    // Check that all local ports are unique
+    const ports = new Set(
+      props.endpoints.map((endpoint) => endpoint.localPort),
+    );
+    if (ports.size !== props.endpoints.length) {
+      throw new Error('All local ports must be unique');
+    }
+
     this.securityGroup =
       props.securityGroup ??
       new SecurityGroup(this, 'BastionHostSecurityGroup', {
@@ -143,12 +177,15 @@ export class BastionHostForward extends Construct {
 
     const cfnBastionHost = this.bastionHost.instance.node
       .defaultChild as CfnInstance;
-    const shellCommands = generateEc2UserData({
-      address: props.address,
-      port: props.port,
-      clientTimeout: props.clientTimeout ?? 1,
-      serverTimeout: props.serverTimeout ?? 1,
-    });
+    const shellCommands = generateEc2UserData(
+      props.endpoints.map((endpoint) => ({
+        address: endpoint.address,
+        remotePort: endpoint.remotePort,
+        localPort: endpoint.localPort ?? endpoint.remotePort,
+        clientTimeout: endpoint.clientTimeout ?? props.clientTimeout ?? 1,
+        serverTimeout: endpoint.serverTimeout ?? props.serverTimeout ?? 1,
+      })),
+    );
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 
     if (props.shouldPatch === undefined || props.shouldPatch) {

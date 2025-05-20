@@ -12,12 +12,12 @@ would be hosted on your machine.
 
 Currently the following AWS Services are supported:
 
-| AWS Service       | CDK Construct                        |
-| ----------------- | ------------------------------------ |
-| Aurora Serverless | `BastionHostAuroraServerlessForward` |
-| Redis             | `BastionHostRedisForward`            |
-| Redshift          | `BastionHostRedshiftForward`         |
-| RDS               | `BastionHostRDSForward`              |
+| AWS Service          | CDK Construct                        |
+| -------------------- | ------------------------------------ |
+| Aurora Serverless    | `BastionHostAuroraServerlessForward` |
+| RDS                  | `BastionHostRDSForward`              |
+| Redshift/Redis/Other | `GenericBastionHostForward`          |
+| Multiple Services    | `MultiendpointBastionHostForward`    |
 
 # V3 DISCLAIMER
 
@@ -261,6 +261,57 @@ class PocRedshiftStack(cdk.Stack):
             vpc=vpc
         )
 ```
+
+## Bastion Host for Multiple Endpoints
+
+```typescript
+import { MultiendpointBastionHostForward } from '@moia-oss/bastion-host-forward';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { DatabaseInstance } from 'aws-cdk-lib/aws-rds';
+import { Construct } from 'constructs';
+
+export class PocMultiDBStack extends Stack {
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, props);
+
+    const vpc = Vpc.fromLookup(this, 'Vpc', {
+      vpcId: 'vpc-1234567890',
+    });
+
+    const primary = DatabaseInstance.fromLookup(this, 'Primary', {
+      instanceIdentifier: 'abcd1234geh',
+    });
+
+    const replica = DatabaseInstance.fromLookup(this, 'Replica', {
+      instanceIdentifier: 'efgh5678ijk',
+    });
+
+    new MultiendpointBastionHostForward(this, 'Bastion', {
+      vpc,
+      clientTimeout: 30,
+      serverTimeout: 30,
+      endpoints: [
+        {
+          address: primary.dbInstanceEndpointAddress,
+          remotePort: primary.dbInstanceEndpointPort,
+          clientTimeout: 5,
+          serverTimeout: 5,
+        },
+        {
+          address: replica.dbInstanceEndpointAddress,
+          remotePort: replica.dbInstanceEndpointPort,
+          localPort: '5433',
+        },
+      ],
+    });
+  }
+}
+```
+
+You must still start a new SSM session for each endpoint. There is no way to forward multiple endpoints in one session.
+
+Note that the `localPort` defaults to the `remotePort` but needs to be specified if the endpoints share the same `remotePort`.
 
 ## Bastion Host for Aurora Serverless
 
