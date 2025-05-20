@@ -136,7 +136,7 @@ export class BastionHostPocStack extends cdk.Stack {
         instanceEndpointAddress: 'abcd1234geh.ughia8asd.eu-central-1.rds.amazonaws.com',
         port: 5432,
         securityGroups: [securityGroup]
-      },
+      }
     );
 
     const bastion = new BastionHostRDSForward(this, 'BastionHost', {
@@ -360,7 +360,7 @@ export class BastionHostPocStack extends cdk.Stack {
         port: 3306,
         clusterEndpointAddress: 'my-aurora.cluster-abcdef.eu-central-1.rds.amazonaws.com',
         securityGroups: [securityGroup]
-      },
+      }
     );
 
     const bastion = new BastionHostAuroraServerlessForward(this, 'BastionHost', {
