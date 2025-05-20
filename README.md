@@ -118,14 +118,14 @@ export class BastionHostPocStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: 'vpc-0123456789abcd'
+      vpcId: 'vpc-0123456789abcd',
     });
 
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'RDSSecurityGroup',
       'odsufa5addasdj',
-      { mutable: false }
+      { mutable: false },
     );
 
     const rdsInstance = DatabaseInstance.fromDatabaseInstanceAttributes(
@@ -133,10 +133,11 @@ export class BastionHostPocStack extends cdk.Stack {
       'MyDb',
       {
         instanceIdentifier: 'abcd1234geh',
-        instanceEndpointAddress: 'abcd1234geh.ughia8asd.eu-central-1.rds.amazonaws.com',
+        instanceEndpointAddress:
+          'abcd1234geh.ughia8asd.eu-central-1.rds.amazonaws.com',
         port: 5432,
-        securityGroups: [securityGroup]
-      }
+        securityGroups: [securityGroup],
+      },
     );
 
     const bastion = new BastionHostRDSForward(this, 'BastionHost', {
@@ -217,13 +218,17 @@ export class PocRedshiftStack extends cdk.Stack {
       },
     );
 
-    const bastion = new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
-      vpc,
-      securityGroup,
-      name: 'MyRedshiftBastionHost',
-      address: redshiftCluster.clusterEndpointAddress,
-      port: redshiftCluster.clusterEndpointPort,
-    });
+    const bastion = new GenericBastionHostForward(
+      this,
+      'BastionHostRedshiftForward',
+      {
+        vpc,
+        securityGroup,
+        name: 'MyRedshiftBastionHost',
+        address: redshiftCluster.clusterEndpointAddress,
+        port: redshiftCluster.clusterEndpointPort,
+      },
+    );
 
     bastion.bastionHost.instance.connections.allowToDefaultPort(
       redshiftCluster,
@@ -342,14 +347,14 @@ export class BastionHostPocStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: 'vpc-0123456789abcd'
+      vpcId: 'vpc-0123456789abcd',
     });
 
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'AuroraSecurityGroup',
       'odsufa5addasdj',
-      { mutable: false }
+      { mutable: false },
     );
 
     const serverlessCluster = ServerlessCluster.fromServerlessClusterAttributes(
@@ -358,15 +363,20 @@ export class BastionHostPocStack extends cdk.Stack {
       {
         clusterIdentifier: 'my-cluster',
         port: 3306,
-        clusterEndpointAddress: 'my-aurora.cluster-abcdef.eu-central-1.rds.amazonaws.com',
-        securityGroups: [securityGroup]
-      }
+        clusterEndpointAddress:
+          'my-aurora.cluster-abcdef.eu-central-1.rds.amazonaws.com',
+        securityGroups: [securityGroup],
+      },
     );
 
-    const bastion = new BastionHostAuroraServerlessForward(this, 'BastionHost', {
-      vpc,
-      serverlessCluster,
-    });
+    const bastion = new BastionHostAuroraServerlessForward(
+      this,
+      'BastionHost',
+      {
+        vpc,
+        serverlessCluster,
+      },
+    );
 
     bastion.bastionHost.instance.connections.allowToDefaultPort(
       serverlessCluster,
