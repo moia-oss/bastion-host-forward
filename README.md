@@ -139,11 +139,15 @@ export class BastionHostPocStack extends cdk.Stack {
       }
     );
 
-    new BastionHostRDSForward(this, 'BastionHost', {
+    const bastion = new BastionHostRDSForward(this, 'BastionHost', {
       vpc: vpc,
       rdsInstance: rdsInstance,
       name: 'MyBastionHost',
     });
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(rdsInstance);
+  }
+}
 ```
 
 If the RDS is IAM Authenticated you also need to add an `iam_user` and
@@ -175,6 +179,9 @@ connection to a RedShift instance, but this can also be a Redis Node or any
 other data store on AWS. Instead of passing the complete L2 construct and
 letting the library extract the necessary properties, the client is passing them
 directly to the construct:
+
+__Note:__ This example is outdated now that a Redshift L2 construct is not longer
+available, but it illustrates the required steps.
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
@@ -210,13 +217,15 @@ export class PocRedshiftStack extends cdk.Stack {
       },
     );
 
-    new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
+    const bastion = new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
       vpc,
       securityGroup,
       name: 'MyRedshiftBastionHost',
       address: redshiftCluster.clusterEndpointAddress,
       port: redshiftCluster.clusterEndpointPort,
     });
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(redshiftCluster);
   }
 }
 ```
@@ -251,15 +260,17 @@ class PocRedshiftStack(cdk.Stack):
             cluster_endpoint_port=5439
         )
 
-        bastion_host_forward.GenericBastionHostForward(
+        bastion = bastion_host_forward.GenericBastionHostForward(
             self,
             "bastion-host",
             name="my-bastion-host",
             security_group=security_group,
-            address: redshift_cluster.cluster_endpoint_address,
+            address=redshift_cluster.cluster_endpoint_address,
             port: redshift_cluster.cluster_endpoint_port,
             vpc=vpc
         )
+
+        bastion.bastion_host.instance.connections.allow_to_default_port(redshift_cluster)
 ```
 
 ## Bastion Host for Multiple Endpoints
@@ -287,7 +298,7 @@ export class PocMultiDBStack extends Stack {
       instanceIdentifier: 'efgh5678ijk',
     });
 
-    new MultiendpointBastionHostForward(this, 'Bastion', {
+    const bastion = new MultiendpointBastionHostForward(this, 'Bastion', {
       vpc,
       clientTimeout: 30,
       serverTimeout: 30,
@@ -305,6 +316,9 @@ export class PocMultiDBStack extends Stack {
         },
       ],
     });
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(primary);
+    bastion.bastionHost.instance.connections.allowToDefaultPort(replica);
   }
 }
 ```
@@ -347,10 +361,14 @@ export class BastionHostPocStack extends cdk.Stack {
       }
     );
 
-    new BastionHostAuroraServerlessForward(this, 'BastionHost', {
+    const bastion = new BastionHostAuroraServerlessForward(this, 'BastionHost', {
       vpc,
       serverlessCluster,
     });
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(serverlessCluster);
+  }
+}
 ```
 
 ## Deploying the Bastion Host
