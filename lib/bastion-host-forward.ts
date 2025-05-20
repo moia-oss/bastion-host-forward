@@ -111,7 +111,7 @@ export class BastionHostForward extends Construct {
   /**
    * @returns The BastionHost Instance
    */
-  protected readonly bastionHost: BastionHostLinux;
+  public readonly bastionHost: BastionHostLinux;
 
   protected constructor(
     scope: Construct,
