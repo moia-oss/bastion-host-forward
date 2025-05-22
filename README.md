@@ -200,16 +200,12 @@ export class PocRedshiftStack extends cdk.Stack {
         mutable: false,
       },
     );
-    const redshiftCluster = new CfnCluster(
-      this,
-      'RedshiftCluster',
-      {
-        dbName: 'myRedshiftClusterName',
-        masterUsername: 'test',
-        nodeType: 'dc2.large',
-        clusterType: 'single-node',
-      },
-    );
+    const redshiftCluster = new CfnCluster(this, 'RedshiftCluster', {
+      dbName: 'myRedshiftClusterName',
+      masterUsername: 'test',
+      nodeType: 'dc2.large',
+      clusterType: 'single-node',
+    });
 
     new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
       vpc,
