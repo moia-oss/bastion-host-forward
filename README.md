@@ -118,14 +118,14 @@ export class BastionHostPocStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: 'vpc-0123456789abcd'
+      vpcId: 'vpc-0123456789abcd',
     });
 
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'RDSSecurityGroup',
       'odsufa5addasdj',
-      { mutable: false }
+      { mutable: false },
     );
 
     const rdsInstance = DatabaseInstance.fromDatabaseInstanceAttributes(
@@ -133,17 +133,22 @@ export class BastionHostPocStack extends cdk.Stack {
       'MyDb',
       {
         instanceIdentifier: 'abcd1234geh',
-        instanceEndpointAddress: 'abcd1234geh.ughia8asd.eu-central-1.rds.amazonaws.com',
+        instanceEndpointAddress:
+          'abcd1234geh.ughia8asd.eu-central-1.rds.amazonaws.com',
         port: 5432,
-        securityGroups: [securityGroup]
-      }
+        securityGroups: [securityGroup],
+      },
     );
 
-    new BastionHostRDSForward(this, 'BastionHost', {
+    const bastion = new BastionHostRDSForward(this, 'BastionHost', {
       vpc: vpc,
       rdsInstance: rdsInstance,
       name: 'MyBastionHost',
     });
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(rdsInstance);
+  }
+}
 ```
 
 If the RDS is IAM Authenticated you also need to add an `iam_user` and
@@ -180,16 +185,13 @@ directly to the construct:
 import * as cdk from '@aws-cdk/core';
 import { GenericBastionHostForward } from '@moia-oss/bastion-host-forward';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
-import { Cluster } from '@aws-cdk/aws-redshift';
-
+import { CfnCluster } from '@aws-cdk/aws-redshift';
 export class PocRedshiftStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
       vpcId: 'vpc-12345678',
     });
-
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'BastionHostSecurityGroup',
@@ -198,17 +200,12 @@ export class PocRedshiftStack extends cdk.Stack {
         mutable: false,
       },
     );
-
-    const redshiftCluster = Cluster.fromClusterAttributes(
-      this,
-      'RedshiftCluster',
-      {
-        clusterName: 'myRedshiftClusterName',
-        clusterEndpointAddress:
-          'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
-        clusterEndpointPort: 5439,
-      },
-    );
+    const redshiftCluster = new CfnCluster(this, 'RedshiftCluster', {
+      dbName: 'myRedshiftClusterName',
+      masterUsername: 'test',
+      nodeType: 'dc2.large',
+      clusterType: 'single-node',
+    });
 
     new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
       vpc,
@@ -217,6 +214,21 @@ export class PocRedshiftStack extends cdk.Stack {
       address: redshiftCluster.clusterEndpointAddress,
       port: redshiftCluster.clusterEndpointPort,
     });
+    const bastion = new GenericBastionHostForward(
+      this,
+      'BastionHostRedshiftForward',
+      {
+        vpc,
+        securityGroup,
+        name: 'MyRedshiftBastionHost',
+        address: redshiftCluster.attrEndpointAddress,
+        port: redshiftCluster.attrEndpointPort,
+      },
+    );
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(
+      redshiftCluster,
+    );
   }
 }
 ```
@@ -251,15 +263,17 @@ class PocRedshiftStack(cdk.Stack):
             cluster_endpoint_port=5439
         )
 
-        bastion_host_forward.GenericBastionHostForward(
+        bastion = bastion_host_forward.GenericBastionHostForward(
             self,
             "bastion-host",
             name="my-bastion-host",
             security_group=security_group,
-            address: redshift_cluster.cluster_endpoint_address,
-            port: redshift_cluster.cluster_endpoint_port,
+            address=redshift_cluster.cluster_endpoint_address,
+            port=redshift_cluster.cluster_endpoint_port,
             vpc=vpc
         )
+
+        bastion.bastion_host.instance.connections.allow_to_default_port(redshift_cluster)
 ```
 
 ## Bastion Host for Multiple Endpoints
@@ -287,7 +301,7 @@ export class PocMultiDBStack extends Stack {
       instanceIdentifier: 'efgh5678ijk',
     });
 
-    new MultiendpointBastionHostForward(this, 'Bastion', {
+    const bastion = new MultiendpointBastionHostForward(this, 'Bastion', {
       vpc,
       clientTimeout: 30,
       serverTimeout: 30,
@@ -305,6 +319,9 @@ export class PocMultiDBStack extends Stack {
         },
       ],
     });
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(primary);
+    bastion.bastionHost.instance.connections.allowToDefaultPort(replica);
   }
 }
 ```
@@ -326,14 +343,14 @@ export class BastionHostPocStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: 'vpc-0123456789abcd'
+      vpcId: 'vpc-0123456789abcd',
     });
 
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'AuroraSecurityGroup',
       'odsufa5addasdj',
-      { mutable: false }
+      { mutable: false },
     );
 
     const serverlessCluster = ServerlessCluster.fromServerlessClusterAttributes(
@@ -342,15 +359,26 @@ export class BastionHostPocStack extends cdk.Stack {
       {
         clusterIdentifier: 'my-cluster',
         port: 3306,
-        clusterEndpointAddress: 'my-aurora.cluster-abcdef.eu-central-1.rds.amazonaws.com',
-        securityGroups: [securityGroup]
-      }
+        clusterEndpointAddress:
+          'my-aurora.cluster-abcdef.eu-central-1.rds.amazonaws.com',
+        securityGroups: [securityGroup],
+      },
     );
 
-    new BastionHostAuroraServerlessForward(this, 'BastionHost', {
-      vpc,
+    const bastion = new BastionHostAuroraServerlessForward(
+      this,
+      'BastionHost',
+      {
+        vpc,
+        serverlessCluster,
+      },
+    );
+
+    bastion.bastionHost.instance.connections.allowToDefaultPort(
       serverlessCluster,
-    });
+    );
+  }
+}
 ```
 
 ## Deploying the Bastion Host
