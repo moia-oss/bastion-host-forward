@@ -181,23 +181,17 @@ other data store on AWS. Instead of passing the complete L2 construct and
 letting the library extract the necessary properties, the client is passing them
 directly to the construct:
 
-**Note:** This example is outdated now that a Redshift L2 construct is no longer
-available, but it illustrates the required steps.
-
 ```typescript
 import * as cdk from '@aws-cdk/core';
 import { GenericBastionHostForward } from '@moia-oss/bastion-host-forward';
 import { SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
-import { Cluster } from '@aws-cdk/aws-redshift';
-
+import { CfnCluster } from '@aws-cdk/aws-redshift';
 export class PocRedshiftStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
     const vpc = Vpc.fromLookup(this, 'MyVpc', {
       vpcId: 'vpc-12345678',
     });
-
     const securityGroup = SecurityGroup.fromSecurityGroupId(
       this,
       'BastionHostSecurityGroup',
@@ -206,18 +200,24 @@ export class PocRedshiftStack extends cdk.Stack {
         mutable: false,
       },
     );
-
-    const redshiftCluster = Cluster.fromClusterAttributes(
+    const redshiftCluster = new CfnCluster(
       this,
       'RedshiftCluster',
       {
-        clusterName: 'myRedshiftClusterName',
-        clusterEndpointAddress:
-          'myRedshiftClusterName.abcdefg.eu-central-1.redshift.amazonaws.com',
-        clusterEndpointPort: 5439,
+        dbName: 'myRedshiftClusterName',
+        masterUsername: 'test',
+        nodeType: 'dc2.large',
+        clusterType: 'single-node',
       },
     );
 
+    new GenericBastionHostForward(this, 'BastionHostRedshiftForward', {
+      vpc,
+      securityGroup,
+      name: 'MyRedshiftBastionHost',
+      address: redshiftCluster.clusterEndpointAddress,
+      port: redshiftCluster.clusterEndpointPort,
+    });
     const bastion = new GenericBastionHostForward(
       this,
       'BastionHostRedshiftForward',
@@ -225,8 +225,8 @@ export class PocRedshiftStack extends cdk.Stack {
         vpc,
         securityGroup,
         name: 'MyRedshiftBastionHost',
-        address: redshiftCluster.clusterEndpointAddress,
-        port: redshiftCluster.clusterEndpointPort,
+        address: redshiftCluster.attrEndpointAddress,
+        port: redshiftCluster.attrEndpointPort,
       },
     );
 
