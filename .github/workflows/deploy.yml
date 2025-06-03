@@ -10,10 +10,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use node.js 20.x
+      - name: Use node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
       - name: NPM Install
         run: npm ci
       - name: Version Package from Tag
