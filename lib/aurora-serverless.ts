@@ -19,8 +19,7 @@ import type { Construct } from 'constructs';
 import { BastionHostForward } from './bastion-host-forward';
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
-export interface BastionHostAuroraServerlessForwardProps
-  extends BastionHostForwardBaseProps {
+export interface BastionHostAuroraServerlessForwardProps extends BastionHostForwardBaseProps {
   /*
    * The Aurora Serverless Cluster where the bastion host should be able to connect to
    */
