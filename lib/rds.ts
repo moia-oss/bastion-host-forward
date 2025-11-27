@@ -19,8 +19,7 @@ import type { Construct } from 'constructs';
 import { BastionHostForward } from './bastion-host-forward';
 import type { BastionHostForwardBaseProps } from './bastion-host-forward-base-props';
 
-export interface BastionHostRDSForwardProps
-  extends BastionHostForwardBaseProps {
+export interface BastionHostRDSForwardProps extends BastionHostForwardBaseProps {
   /*
    * The RDS instance where the bastion host should be able to connect to
    */

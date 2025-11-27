@@ -33,7 +33,6 @@ export interface EndpointProps {
   readonly serverTimeout?: number;
 }
 
-export interface MultiendpointBastionHostForwardProps
-  extends BastionHostForwardBaseProps {
+export interface MultiendpointBastionHostForwardProps extends BastionHostForwardBaseProps {
   readonly endpoints: EndpointProps[];
 }
