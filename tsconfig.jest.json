@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "isolatedModules": true,
+    "outDir": "dist-test",
+    "rootDir": ".",
+    "types": ["node", "jest"]
+  }
+}
