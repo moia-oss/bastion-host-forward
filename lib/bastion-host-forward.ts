@@ -151,6 +151,7 @@ export class BastionHostForward extends Construct {
         allowAllOutbound: true,
       });
 
+    const shouldPatch = props.shouldPatch === undefined || props.shouldPatch;
     const instanceName = props.name ?? 'BastionHost';
     this.bastionHost = new BastionHostLinux(this, 'BastionHost', {
       requireImdsv2: true,
@@ -162,7 +163,10 @@ export class BastionHostForward extends Construct {
       }),
       instanceType:
         props.instanceType ??
-        InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
+        InstanceType.of(
+          InstanceClass.T4G,
+          shouldPatch ? InstanceSize.MICRO : InstanceSize.NANO,
+        ),
       blockDevices: [
         {
           deviceName: '/dev/xvda',
@@ -188,7 +192,7 @@ export class BastionHostForward extends Construct {
     );
     cfnBastionHost.userData = Fn.base64(shellCommands.render());
 
-    if (props.shouldPatch === undefined || props.shouldPatch) {
+    if (shouldPatch) {
       this.bastionHost.instance.role.addManagedPolicy(
         ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'),
       );

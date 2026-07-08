@@ -51,6 +51,12 @@ export interface BastionHostForwardBaseProps {
   /**
    * Whether patching should be enabled for the bastion-host-forward instance
    *
+   * When enabled, an SSM Maintenance Window is created to run
+   * `AWS-RunPatchBaseline` every Sunday at 3 AM. To avoid OOM kills during
+   * patching, the default instance size is automatically upgraded from
+   * `t4g.nano` to `t4g.micro` when patching is enabled (unless `instanceType`
+   * is set explicitly).
+   *
    * @default true
    */
   readonly shouldPatch?: boolean;
@@ -78,7 +84,13 @@ export interface BastionHostForwardBaseProps {
 
   /**
    * Type of instance to launch
-   * @default 't4g.nano'
+   *
+   * When not set, the instance size is chosen automatically based on whether
+   * patching is enabled: `t4g.micro` when patching is on (the default), or
+   * `t4g.nano` when patching is disabled. The larger size prevents OOM kills
+   * during the patch maintenance window.
+   *
+   * @default 't4g.micro' when shouldPatch is true (default), 't4g.nano' otherwise
    */
   readonly instanceType?: InstanceType;
 }

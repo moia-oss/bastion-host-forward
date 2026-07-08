@@ -23,6 +23,8 @@ Currently the following AWS Services are supported:
 
 With version 3 a patch manager component is included so that the bastion host instance is provided with security updates on a regular basis. These happen in a maintenance window every sunday at 3am (timezone where it's deployed). To disable the patching, you need to provide the attribute `shouldPatch: false`.
 
+When patching is enabled (the default), the default instance type is automatically set to `t4g.micro` instead of `t4g.nano` to prevent OOM kills during the patch maintenance window. If you set `instanceType` explicitly, that value is always used regardless of the `shouldPatch` setting.
+
 Example:
 
 ```typescript

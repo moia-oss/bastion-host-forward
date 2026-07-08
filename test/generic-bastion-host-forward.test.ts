@@ -14,7 +14,13 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib';
 import { strict as assert } from 'assert';
-import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  SecurityGroup,
+  Vpc,
+} from 'aws-cdk-lib/aws-ec2';
 import { GenericBastionHostForward } from '../lib/generic-bastion-host-forward';
 
 test('Bastion Host created for normal access', () => {
@@ -134,6 +140,68 @@ test('Bastion Host has encrypted EBS', () => {
         },
       },
     ],
+  });
+});
+
+test('Bastion Host default instance type is t4g.micro when patching is enabled', () => {
+  const app = new App();
+  const stack = new Stack(app, 'TestStack');
+  const testVpc = new Vpc(stack, 'TestVpc');
+
+  // WHEN — shouldPatch defaults to true
+  new GenericBastionHostForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    address: '127.0.0.1',
+    port: '6379',
+  });
+
+  const template = Template.fromStack(stack);
+
+  // THEN
+  template.hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't4g.micro',
+  });
+});
+
+test('Bastion Host default instance type is t4g.nano when patching is disabled', () => {
+  const app = new App();
+  const stack = new Stack(app, 'TestStack');
+  const testVpc = new Vpc(stack, 'TestVpc');
+
+  // WHEN
+  new GenericBastionHostForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    address: '127.0.0.1',
+    port: '6379',
+    shouldPatch: false,
+  });
+
+  const template = Template.fromStack(stack);
+
+  // THEN
+  template.hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't4g.nano',
+  });
+});
+
+test('Bastion Host explicit instanceType is used regardless of shouldPatch', () => {
+  const app = new App();
+  const stack = new Stack(app, 'TestStack');
+  const testVpc = new Vpc(stack, 'TestVpc');
+
+  // WHEN — explicit instanceType with patching on
+  new GenericBastionHostForward(stack, 'MyTestConstruct', {
+    vpc: testVpc,
+    address: '127.0.0.1',
+    port: '6379',
+    instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
+  });
+
+  const template = Template.fromStack(stack);
+
+  // THEN — the explicit value wins, not the patch-bumped default
+  template.hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't4g.small',
   });
 });
 
