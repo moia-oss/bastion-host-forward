@@ -1,18 +1,24 @@
 version: 2
+
+multi-ecosystem-groups:
+  dependencies:
+    schedule:
+      interval: monthly
+    labels: [dependabot]
+
 updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'monthly'
-    groups:
-      npm-dependencies:
-        patterns:
-          - '*'
-  - package-ecosystem: 'github-actions'
-    directory: '/'
-    schedule:
-      interval: 'monthly'
-    groups:
-      gh-actions-dependencies:
-        patterns:
-          - '*'
+  - package-ecosystem: github-actions
+    directories: [/]
+    patterns: ["*"]
+    cooldown:
+      default-days: 14
+    registries: [github]
+    multi-ecosystem-group: dependencies
+
+  - package-ecosystem: npm
+    directories: ["**/*"]
+    patterns: ["*"]
+    cooldown:
+      default-days: 14
+    registries: [jfrog-npm, github]
+    multi-ecosystem-group: dependencies
