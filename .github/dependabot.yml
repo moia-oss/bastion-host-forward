@@ -20,3 +20,6 @@ updates:
     cooldown:
       default-days: 14
     multi-ecosystem-group: dependencies
+    ignore:
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
