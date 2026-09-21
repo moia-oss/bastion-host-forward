@@ -9,16 +9,14 @@ multi-ecosystem-groups:
 updates:
   - package-ecosystem: github-actions
     directories: [/]
-    patterns: ["*"]
+    patterns: ['*']
     cooldown:
       default-days: 14
-    registries: [github]
     multi-ecosystem-group: dependencies
 
   - package-ecosystem: npm
-    directories: ["**/*"]
-    patterns: ["*"]
+    directories: ['**/*']
+    patterns: ['*']
     cooldown:
       default-days: 14
-    registries: [jfrog-npm, github]
     multi-ecosystem-group: dependencies
